@@ -1,0 +1,10 @@
+// 1.20.1	2024-04-14T13:16:29.7949498	Registrate Provider for season_shop [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+ce07bb3313aa4fb8565c53c39ecbd2a6e2641905 assets/season_shop/blockstates/shipping_bin.json
+b728cb1955fd3a2a4dcb50e68e514544fd1cdb17 assets/season_shop/lang/en_ud.json
+6d9d1bf4164f14feb96033de08238809520bcee8 assets/season_shop/lang/en_us.json
+ae92eca02236a67e0f90a30a606cf3fc6e20d8fb assets/season_shop/models/block/shipping_bin.json
+ca0ecd969d2f459ef5df28d6c00eb7babe0d7b47 assets/season_shop/models/block/shipping_bin_left.json
+369df97e383432213125f8bc1eee082675932146 assets/season_shop/models/block/shipping_bin_right.json
+61dacaebb3c33d82722f4a1d7067ca463b49efdb assets/season_shop/models/item/shipping_bin.json
+996e46af050b99c87bd8b94fc84ade6fbe4fa089 data/minecraft/tags/blocks/mineable/axe.json
+9eafb30352cb3e5bd3e546aebe139aca0e94cf19 data/season_shop/loot_tables/blocks/shipping_bin.json

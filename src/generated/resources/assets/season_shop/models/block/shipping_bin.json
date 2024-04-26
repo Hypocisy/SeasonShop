@@ -1,0 +1,7 @@
+{
+  "parent": "season_shop:custom/block/shipping_bin",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "single": "season_shop:block/shipping_bin"
+  }
+}

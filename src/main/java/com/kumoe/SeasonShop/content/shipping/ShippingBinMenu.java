@@ -8,61 +8,70 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 public class ShippingBinMenu extends AbstractContainerMenu {
-    private final ShippingBinBlockEntity container;
+    private final AbstractShippingBinBlockEntity container;
+    protected final Inventory playerInventory;
     protected int containerRows = 3;
 
-    public ShippingBinMenu(MenuType<ShippingBinMenu> pType, int pContainerId, Inventory pPlayerInventory, ShippingBinBlockEntity pContainer) {
-        super(pType, pContainerId);
+    public ShippingBinMenu(MenuType<ShippingBinMenu> menu, int windowId, Inventory pPlayerInventory, AbstractShippingBinBlockEntity pContainer) {
+        super(menu, windowId);
         this.container = pContainer;
-
-        int e = (this.containerRows - 4) * 18;
-        int row;
-        int slot;
-        for (row = 0; row < this.containerRows; ++row) {
-            for (slot = 0; slot < 6; ++slot) {
-                this.addSlot(new SeasonSlot(pContainer, slot + row * 6, 8 + slot * 18, 18 + row * 18));
-            }
-        }
-
-        // add inv
-        for (row = 0; row < 3; ++row) {
-            for (slot = 0; slot < 9; ++slot) {
-                this.addSlot(new Slot(pPlayerInventory, slot + row * 9 + 9, 8 + slot * 18, 123 + row * 18 + e));
-            }
-        }
-
-        for (row = 0; row < 9; ++row) {
-            this.addSlot(new Slot(pPlayerInventory, row, 8 + row * 18, 179 + e));
-        }
-
-
+        this.playerInventory = pPlayerInventory;
+        addSlot();
     }
 
-    public ShippingBinMenu(MenuType<ShippingBinMenu> menu, int windowId, Inventory playerInventory, @Nullable FriendlyByteBuf data) {
-        this(menu, windowId, playerInventory, getTileEntity(playerInventory, data));
+    public ShippingBinMenu(MenuType<ShippingBinMenu> menu, int windowId, Inventory pPlayerInventory, @Nullable FriendlyByteBuf data) {
+        this(menu, windowId, pPlayerInventory, getTileEntity(pPlayerInventory, data));
     }
 
-    private static ShippingBinBlockEntity getTileEntity(Inventory playerInventory, @Nullable FriendlyByteBuf data) {
+    static AbstractShippingBinBlockEntity getTileEntity(Inventory playerInventory, @Nullable FriendlyByteBuf data) {
         Objects.requireNonNull(playerInventory, "playerInventory cannot be null");
         Objects.requireNonNull(data, "data cannot be null");
         BlockEntity tileAtPos = playerInventory.player.level().getBlockEntity(data.readBlockPos());
-        if (tileAtPos instanceof ShippingBinBlockEntity bin) {
+        if (tileAtPos instanceof AbstractShippingBinBlockEntity bin) {
             return bin;
         } else {
             throw new IllegalStateException("Tile entity is not correct! " + tileAtPos);
         }
     }
 
-    public Block getBlock() {
-        return this.container.getBlockState().getBlock();
+    void addSlot(){
+        int e = (this.containerRows - 4) * 18;
+        int row;
+        int slot;
+        for (row = 0; row < this.containerRows; ++row) {
+            for (slot = 0; slot < 6; ++slot) {
+                this.addSlot(new SeasonSlot(this.container, slot + row * 6, 8 + slot * 18, 18 + row * 18));
+            }
+        }
+
+        // add player inv
+        for (row = 0; row < 3; ++row) {
+            for (slot = 0; slot < 9; ++slot) {
+                this.addSlot(new Slot(this.playerInventory, slot + row * 9 + 9, 8 + slot * 18, 123 + row * 18 + e));
+            }
+        }
+
+        for (row = 0; row < 9; ++row) {
+            this.addSlot(new Slot(this.playerInventory, row, 8 + row * 18, 179 + e));
+        }
     }
+
+//    private void addShopSlot(){
+//        int e = (this.containerRows - 4) * 18;
+//        int row;
+//        int slot;
+//        for (row = 0; row < this.containerRows; ++row) {
+//            for (slot = 0; slot < 9; ++slot) {
+//                this.addSlot(new SeasonSlot(this.container, slot + row * 6, 8 + slot * 18, 18 + row * 18));
+//            }
+//        }
+//    }
 
     @Override
     public ItemStack quickMoveStack(Player player, int pIndex) {
@@ -98,7 +107,7 @@ public class ShippingBinMenu extends AbstractContainerMenu {
         return this.container.stillValid(player);
     }
 
-    public ShippingBinBlockEntity getContainer() {
+    public AbstractShippingBinBlockEntity getContainer() {
         return this.container;
     }
 }

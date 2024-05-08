@@ -1,5 +1,6 @@
 package com.kumoe.SeasonShop.content.shipping;
 
+import com.kumoe.SeasonShop.init.SeasonShop;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -13,6 +14,8 @@ public class SeasonSlot extends Slot {
 
     @Override
     public void onTake(Player pPlayer, ItemStack pStack) {
+
+        SeasonShop.LOGGER.debug("test");
         super.onTake(pPlayer, pStack);
     }
 

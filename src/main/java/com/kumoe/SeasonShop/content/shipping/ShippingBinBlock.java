@@ -3,6 +3,7 @@ package com.kumoe.SeasonShop.content.shipping;
 import com.kumoe.SeasonShop.init.SSBlock;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
+import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -15,15 +16,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.AbstractChestBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.DoubleBlockCombiner;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.network.NetworkHooks;
@@ -33,9 +33,10 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 
 public class ShippingBinBlock extends ChestBlock {
+    public static final EnumProperty<ChestType> TYPE = BlockStateProperties.CHEST_TYPE;
 
-    private static final DoubleBlockCombiner.Combiner<ChestBlockEntity, Optional<MenuProvider>> MENU_PROVIDER_COMBINER = new DoubleBlockCombiner.Combiner<>() {
-        public Optional<MenuProvider> acceptDouble(final ChestBlockEntity chestBlockEntity1, final ChestBlockEntity chestBlockEntity2) {
+    private static final DoubleBlockCombiner.Combiner<ShippingBinBlockEntity, Optional<MenuProvider>> MENU_PROVIDER_COMBINER = new DoubleBlockCombiner.Combiner<>() {
+        public Optional<MenuProvider> acceptDouble(final ShippingBinBlockEntity chestBlockEntity1, final ShippingBinBlockEntity chestBlockEntity2) {
             final Container container = new CompoundContainer(chestBlockEntity1, chestBlockEntity2);
             return Optional.of(new MenuProvider() {
                 @Nullable
@@ -56,7 +57,7 @@ public class ShippingBinBlock extends ChestBlock {
             });
         }
 
-        public Optional<MenuProvider> acceptSingle(ChestBlockEntity chestBlockEntity) {
+        public Optional<MenuProvider> acceptSingle(ShippingBinBlockEntity chestBlockEntity) {
             return Optional.of(chestBlockEntity);
         }
 
@@ -94,7 +95,7 @@ public class ShippingBinBlock extends ChestBlock {
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-            if (entity instanceof ShippingBinBlockEntity blockEntity) {
+            if (entity instanceof AbstractShippingBinBlockEntity blockEntity) {
                 NetworkHooks.openScreen((ServerPlayer) pPlayer, blockEntity, pPos);
                 pPlayer.awardStat(this.getOpenChestStat());
                 PiglinAi.angerNearbyPiglins(pPlayer, true);
@@ -107,7 +108,38 @@ public class ShippingBinBlock extends ChestBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        return pLevel.isClientSide ? createTickerHelper(pBlockEntityType, SSBlock.SHIPPING_BIN_BLOCK_BE.get(), ShippingBinBlockEntity::lidAnimateTick) : null;
+        return pLevel.isClientSide ? createTickerHelper(pBlockEntityType, SSBlock.SHIPPING_BIN_BLOCK_BE.get(), AbstractShippingBinBlockEntity::lidAnimateTick) : null;
+    }
+
+    public static DoubleBlockCombiner.Combiner<ShippingBinBlockEntity, Float2FloatFunction> opennesscombiner(final LidBlockEntity pLid) {
+        return new DoubleBlockCombiner.Combiner<>() {
+            @Override
+            public Float2FloatFunction acceptDouble(ShippingBinBlockEntity pFirst, ShippingBinBlockEntity pSecond) {
+                return (pPartialTicks) -> Math.max(pFirst.getOpenNess(pPartialTicks), pSecond.getOpenNess(pPartialTicks));
+            }
+
+            public Float2FloatFunction acceptSingle(ShippingBinBlockEntity pSingle) {
+                return pSingle::getOpenNess;
+            }
+
+            public Float2FloatFunction acceptNone() {
+                return pLid::getOpenNess;
+            }
+        };
+    }
+
+    public DoubleBlockCombiner.NeighborCombineResult<? extends ShippingBinBlockEntity> combine(BlockState pState, Level pLevel, BlockPos pPos, boolean pOverride) {
+        BiPredicate<LevelAccessor, BlockPos> bipredicate = pOverride ? ((levelAccessor, blockPos) -> false) : ShippingBinBlock::isChestBlockedAt;
+
+        return DoubleBlockCombiner.combineWithNeigbour(SSBlock.SHIPPING_BIN_BLOCK_BE.get(), ShippingBinBlock::getBlockType, ShippingBinBlock::getConnectedDirection, FACING, pState, pLevel, pPos, bipredicate);
+    }
+    public static DoubleBlockCombiner.BlockType getBlockType(BlockState blockState) {
+        ChestType chesttype = blockState.getValue(TYPE);
+        if (chesttype == ChestType.SINGLE) {
+            return DoubleBlockCombiner.BlockType.SINGLE;
+        } else {
+            return chesttype == ChestType.RIGHT ? DoubleBlockCombiner.BlockType.FIRST : DoubleBlockCombiner.BlockType.SECOND;
+        }
     }
 
     @Nullable
@@ -119,7 +151,7 @@ public class ShippingBinBlock extends ChestBlock {
     @Override
     public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
         BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        if (blockentity instanceof ShippingBinBlockEntity blockEntity) {
+        if (blockentity instanceof AbstractShippingBinBlockEntity blockEntity) {
             blockEntity.recheckOpen();
         }
 
@@ -128,7 +160,7 @@ public class ShippingBinBlock extends ChestBlock {
 
     @Nullable
     @Override
-    public ShippingBinBlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+    public AbstractShippingBinBlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return SSBlock.SHIPPING_BIN_BLOCK_BE.get().create(blockPos, blockState);
     }
 

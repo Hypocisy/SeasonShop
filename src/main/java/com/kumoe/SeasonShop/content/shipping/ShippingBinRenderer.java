@@ -1,5 +1,6 @@
 package com.kumoe.SeasonShop.content.shipping;
 
+import com.kumoe.SeasonShop.init.SeasonShop;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -22,7 +23,7 @@ import net.minecraft.world.level.block.entity.LidBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 
-public class ShippingBinRenderer<T extends ShippingBinBlockEntity & LidBlockEntity> extends ChestRenderer<T> {
+public class ShippingBinRenderer<T extends ChestBlockEntity & LidBlockEntity> extends ChestRenderer<T> {
     private final ModelPart lid;
     private final ModelPart bottom;
     private final ModelPart lock;
@@ -74,7 +75,7 @@ public class ShippingBinRenderer<T extends ShippingBinBlockEntity & LidBlockEnti
             pPoseStack.translate(0.5F, 0.5F, 0.5F);
             pPoseStack.mulPose(Axis.YP.rotationDegrees(-f));
             pPoseStack.translate(-0.5F, -0.5F, -0.5F);
-            DoubleBlockCombiner.NeighborCombineResult<? extends ChestBlockEntity> neighborcombineresult;
+            DoubleBlockCombiner.NeighborCombineResult<? extends ShippingBinBlockEntity> neighborcombineresult;
 
             if (flag) {
                 neighborcombineresult = shippingBinBlock.combine(blockstate, level, pBlockEntity.getBlockPos(), true);
@@ -82,11 +83,12 @@ public class ShippingBinRenderer<T extends ShippingBinBlockEntity & LidBlockEnti
                 neighborcombineresult = DoubleBlockCombiner.Combiner::acceptNone;
             }
 
-            float f1 = neighborcombineresult.apply(ShippingBinBlock.opennessCombiner(pBlockEntity)).get(pPartialTick);
+            float f1 = neighborcombineresult.apply(ShippingBinBlock.opennesscombiner(pBlockEntity)).get(pPartialTick);
+            SeasonShop.LOGGER.debug("f1:" + f1);
             f1 = 1.0F - f1;
             f1 = 1.0F - f1 * f1 * f1;
-
             int i = neighborcombineresult.apply(new BrightnessCombiner<>()).applyAsInt(pPackedLight);
+
             Material material = super.getMaterial(pBlockEntity, chesttype);
             VertexConsumer vertexconsumer = material.buffer(pBuffer, RenderType::entityCutout);
             if (flag1) {

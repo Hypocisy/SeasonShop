@@ -35,10 +35,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 
-public class ShippingBinBlock extends ChestBlock {
-
-    static final DoubleBlockCombiner.Combiner<ShippingBinBlockEntity, Optional<MenuProvider>> MENU_PROVIDER_COMBINER = new DoubleBlockCombiner.Combiner<>() {
-        public Optional<MenuProvider> acceptDouble(final ShippingBinBlockEntity chestBlockEntity1, final ShippingBinBlockEntity chestBlockEntity2) {
+public class ShopBlock extends ChestBlock {
+    static final DoubleBlockCombiner.Combiner<ShopBlockEntity, Optional<MenuProvider>> MENU_PROVIDER_COMBINER = new DoubleBlockCombiner.Combiner<>() {
+        public Optional<MenuProvider> acceptDouble(final ShopBlockEntity chestBlockEntity1, final ShopBlockEntity chestBlockEntity2) {
             final Container container = new CompoundContainer(chestBlockEntity1, chestBlockEntity2);
             return Optional.of(new MenuProvider() {
                 @Nullable
@@ -57,7 +56,7 @@ public class ShippingBinBlock extends ChestBlock {
             });
         }
 
-        public Optional<MenuProvider> acceptSingle(ShippingBinBlockEntity chestBlockEntity) {
+        public Optional<MenuProvider> acceptSingle(ShopBlockEntity chestBlockEntity) {
             return Optional.of(chestBlockEntity);
         }
 
@@ -66,25 +65,26 @@ public class ShippingBinBlock extends ChestBlock {
         }
     };
 
-    public ShippingBinBlock(Properties pProperties) {
-        super(pProperties, SeasonShopBlocks.SHIPPING_BIN_BE::get);
+
+    public ShopBlock(Properties pProperties) {
+        super(pProperties, SeasonShopBlocks.SHOP_BE::get);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(TYPE, ChestType.SINGLE).setValue(WATERLOGGED, false));
     }
 
-    public static void buildModel(DataGenContext<Block, ShippingBinBlock> ctx, RegistrateBlockstateProvider pvd) {
-        var single = pvd.models().getBuilder("block/shipping_bin")
-                .parent(new ModelFile.UncheckedModelFile(pvd.modLoc("custom/shipping_bin")))
-                .texture("single", pvd.modLoc("block/shipping_bin"))
+    public static void buildModel(DataGenContext<Block, ShopBlock> ctx, RegistrateBlockstateProvider pvd) {
+        var single = pvd.models().getBuilder("block/shop_block")
+                .parent(new ModelFile.UncheckedModelFile(pvd.modLoc("custom/shop_block")))
+                .texture("single", pvd.modLoc("block/shop_block"))
                 .renderType("cutout");
 
-        var left = pvd.models().getBuilder("block/shipping_bin_left")
-                .parent(new ModelFile.UncheckedModelFile(pvd.modLoc("custom/shipping_bin_left")))
-                .texture("left", pvd.modLoc("block/shipping_bin_left"))
+        var left = pvd.models().getBuilder("block/shop_block_left")
+                .parent(new ModelFile.UncheckedModelFile(pvd.modLoc("custom/shop_block_left")))
+                .texture("left", pvd.modLoc("block/shop_block_left"))
                 .renderType("cutout");
 
-        var right = pvd.models().getBuilder("block/shipping_bin_right")
-                .parent(new ModelFile.UncheckedModelFile(pvd.modLoc("custom/shipping_bin_right")))
-                .texture("right", pvd.modLoc("block/shipping_bin_right"))
+        var right = pvd.models().getBuilder("block/shop_block_right")
+                .parent(new ModelFile.UncheckedModelFile(pvd.modLoc("custom/shop_block_right")))
+                .texture("right", pvd.modLoc("block/shop_block_right"))
                 .renderType("cutout");
 
         pvd.horizontalBlock(ctx.get(), state -> switch (state.getValue(TYPE)) {
@@ -94,14 +94,15 @@ public class ShippingBinBlock extends ChestBlock {
         });
     }
 
-    public static DoubleBlockCombiner.Combiner<ShippingBinBlockEntity, Float2FloatFunction> opennesscombiner(final LidBlockEntity pLid) {
+
+    public static DoubleBlockCombiner.Combiner<ShopBlockEntity, Float2FloatFunction> opennesscombiner(final LidBlockEntity pLid) {
         return new DoubleBlockCombiner.Combiner<>() {
             @Override
-            public Float2FloatFunction acceptDouble(ShippingBinBlockEntity pFirst, ShippingBinBlockEntity pSecond) {
+            public Float2FloatFunction acceptDouble(ShopBlockEntity pFirst, ShopBlockEntity pSecond) {
                 return (pPartialTicks) -> Math.max(pFirst.getOpenNess(pPartialTicks), pSecond.getOpenNess(pPartialTicks));
             }
 
-            public Float2FloatFunction acceptSingle(ShippingBinBlockEntity pSingle) {
+            public Float2FloatFunction acceptSingle(ShopBlockEntity pSingle) {
                 return pSingle::getOpenNess;
             }
 
@@ -116,28 +117,35 @@ public class ShippingBinBlock extends ChestBlock {
         return super.getStateForPlacement(pContext);
     }
 
+
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
-            if (pLevel.getBlockEntity(pPos) instanceof ShippingBinBlockEntity blockEntity) {
+            if (pLevel.getBlockEntity(pPos) instanceof ShopBlockEntity blockEntity) {
                 NetworkHooks.openScreen((ServerPlayer) pPlayer, blockEntity, pPos);
                 pPlayer.awardStat(this.getOpenChestStat());
                 PiglinAi.angerNearbyPiglins(pPlayer, true);
             }
         }
 
-        return InteractionResult.sidedSuccess(pLevel.isClientSide());
+        return InteractionResult.sidedSuccess(pLevel.isClientSide);
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        return pLevel.isClientSide ? createTickerHelper(pBlockEntityType, SeasonShopBlocks.SHIPPING_BIN_BE.get(), ShippingBinBlockEntity::lidAnimateTick) : null;
+        return pLevel.isClientSide ? createTickerHelper(pBlockEntityType, SeasonShopBlocks.SHOP_BE.get(), ShopBlockEntity::lidAnimateTick) : null;
     }
 
-    public DoubleBlockCombiner.NeighborCombineResult<? extends ShippingBinBlockEntity> combine(BlockState pState, Level pLevel, BlockPos pPos, boolean pOverride) {
-        BiPredicate<LevelAccessor, BlockPos> bipredicate = pOverride ? ((levelAccessor, blockPos) -> false) : ShippingBinBlock::isChestBlockedAt;
-        return DoubleBlockCombiner.combineWithNeigbour(SeasonShopBlocks.SHIPPING_BIN_BE.get(), ShippingBinBlock::getBlockType, ShippingBinBlock::getConnectedDirection, FACING, pState, pLevel, pPos, bipredicate);
+
+    @Override
+    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
+
+    }
+
+    public DoubleBlockCombiner.NeighborCombineResult<? extends ShopBlockEntity> combine(BlockState pState, Level pLevel, BlockPos pPos, boolean pOverride) {
+        BiPredicate<LevelAccessor, BlockPos> bipredicate = pOverride ? ((levelAccessor, blockPos) -> false) : ShopBlock::isChestBlockedAt;
+        return DoubleBlockCombiner.combineWithNeigbour(SeasonShopBlocks.SHOP_BE.get(), ShopBlock::getBlockType, ShopBlock::getConnectedDirection, FACING, pState, pLevel, pPos, bipredicate);
     }
 
     @Nullable
@@ -146,13 +154,8 @@ public class ShippingBinBlock extends ChestBlock {
         return this.combine(pState, pLevel, pPos, false).apply(MENU_PROVIDER_COMBINER).orElse(null);
     }
 
-    // do nothing
     @Override
-    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {}
-
-    @Nullable
-    @Override
-    public ShippingBinBlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return SeasonShopBlocks.SHIPPING_BIN_BE.create(blockPos, blockState);
+    public ShopBlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return SeasonShopBlocks.SHOP_BE.get().create(pPos, pState);
     }
 }

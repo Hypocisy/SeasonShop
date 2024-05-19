@@ -1,6 +1,5 @@
-package com.kumoe.SeasonShop.content.shop;
+package com.kumoe.SeasonShop.content.shipping;
 
-import com.kumoe.SeasonShop.content.shipping.SeasonSlot;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -9,7 +8,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -23,13 +21,13 @@ public class ShopMenu extends AbstractContainerMenu {
         super(pType, pContainerId);
         this.container = pContainer;
         this.playerInventory = pPlayerInventory;
-
+        this.container.startOpen(pPlayerInventory.player);
 //        int e = (this.containerRows - 4) * 18;
         int row;
         int slot;
         for (row = 0; row < this.containerRows; ++row) {
             for (slot = 0; slot < 9; ++slot) {
-                this.addSlot(new Slot(pContainer, slot + row * 6, 8 + slot * 18, -2+row * 18));
+                this.addSlot(new Slot(pContainer, slot + row * 6, 8 + slot * 18, -2 + row * 18));
             }
         }
 
@@ -50,7 +48,7 @@ public class ShopMenu extends AbstractContainerMenu {
         this(menu, windowId, playerInventory, getTileEntity(playerInventory, data));
     }
 
-    static ShopBlockEntity getTileEntity(Inventory playerInventory, @Nullable FriendlyByteBuf data) {
+    protected static ShopBlockEntity getTileEntity(Inventory playerInventory, @Nullable FriendlyByteBuf data) {
         Objects.requireNonNull(playerInventory, "playerInventory cannot be null");
         Objects.requireNonNull(data, "data cannot be null");
         BlockEntity tileAtPos = playerInventory.player.level().getBlockEntity(data.readBlockPos());
@@ -62,26 +60,47 @@ public class ShopMenu extends AbstractContainerMenu {
     }
 
     /**
-     * Handle when the stack in slot {@code index} is shift-clicked. Normally this moves the stack between the player
-     * inventory and the other inventory(s).
-     *
-     * @param pPlayer
-     * @param pIndex
+     * @param player 玩家
+     * @param pIndex 快速移动到的slot的id
+     * @return {@link net.minecraft.world.item.ItemStack}如果拒绝移动，否则返回快速移动的物品
      */
     @Override
-    public @NotNull ItemStack quickMoveStack(@NotNull Player pPlayer, int pIndex) {
-        return ItemStack.EMPTY;
+    public ItemStack quickMoveStack(Player player, int pIndex) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(pIndex);
+        if (slot.hasItem()) {
+            ItemStack slotItem = slot.getItem();
+            itemStack = slotItem.copy();
+            if (pIndex < this.containerRows * 9) {
+                if (!this.moveItemStackTo(slotItem, this.containerRows * 9, this.slots.size(), true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (!this.moveItemStackTo(slotItem, 0, this.containerRows * 9, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (slotItem.isEmpty()) {
+                slot.setByPlayer(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+        }
+
+        return itemStack;
     }
 
     /**
-     * Determines whether supplied player can use this container
-     *
-     * @param pPlayer
+     * @param player player who opened container
+     * @return container is still Valid
      */
     @Override
-    public boolean stillValid(@NotNull Player pPlayer) {
-        return this.container.stillValid(pPlayer);
+    public boolean stillValid(Player player) {
+        return this.container.stillValid(player);
     }
 
-
+    @Override
+    public void removed(Player pPlayer) {
+        super.removed(pPlayer);
+        this.container.stopOpen(pPlayer);
+    }
 }

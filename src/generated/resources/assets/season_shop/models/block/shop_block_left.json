@@ -1,0 +1,7 @@
+{
+  "parent": "season_shop:custom/shop_block_left",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "left": "season_shop:block/shop_block_left"
+  }
+}

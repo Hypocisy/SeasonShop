@@ -1,10 +1,16 @@
-// 1.20.1	2024-04-14T13:16:29.7949498	Registrate Provider for season_shop [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.20.1	2024-05-19T19:57:04.3946948	Registrate Provider for season_shop [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 ce07bb3313aa4fb8565c53c39ecbd2a6e2641905 assets/season_shop/blockstates/shipping_bin.json
-b728cb1955fd3a2a4dcb50e68e514544fd1cdb17 assets/season_shop/lang/en_ud.json
-6d9d1bf4164f14feb96033de08238809520bcee8 assets/season_shop/lang/en_us.json
-ae92eca02236a67e0f90a30a606cf3fc6e20d8fb assets/season_shop/models/block/shipping_bin.json
-ca0ecd969d2f459ef5df28d6c00eb7babe0d7b47 assets/season_shop/models/block/shipping_bin_left.json
-369df97e383432213125f8bc1eee082675932146 assets/season_shop/models/block/shipping_bin_right.json
+bb047b35d6c498cf1aa83adea7204ece73945c12 assets/season_shop/blockstates/shop_block.json
+614f12c40befbb1ad13c2c7a6111ccc8639dae8e assets/season_shop/lang/en_ud.json
+8045476ab1dc1c070f5796fba5adbebdacbea95c assets/season_shop/lang/en_us.json
+8116756b6ea50fd51e4f3105a9a47d242f4b74f4 assets/season_shop/models/block/shipping_bin.json
+aa01d83774521e66503dec7f72db830cff7c6b1a assets/season_shop/models/block/shipping_bin_left.json
+38f99af5ed5c79fbbb0b99833a849835e4f9482e assets/season_shop/models/block/shipping_bin_right.json
+43e519a03a6ce3fced6eb6e1ba822bd71f107d09 assets/season_shop/models/block/shop_block.json
+d9a8870e776eb492614e0e745f20122624452d9d assets/season_shop/models/block/shop_block_left.json
+03ebd6b72feffd21b9c9cba93d82021ca8be17a4 assets/season_shop/models/block/shop_block_right.json
 61dacaebb3c33d82722f4a1d7067ca463b49efdb assets/season_shop/models/item/shipping_bin.json
-996e46af050b99c87bd8b94fc84ade6fbe4fa089 data/minecraft/tags/blocks/mineable/axe.json
+f5f65d0333f156b2f3290c06101ce529ac578237 assets/season_shop/models/item/shop_block.json
+c34753d5f73171fba39b1caafd3883bf1c7636c9 data/minecraft/tags/blocks/mineable/axe.json
 9eafb30352cb3e5bd3e546aebe139aca0e94cf19 data/season_shop/loot_tables/blocks/shipping_bin.json
+09e9601bb5f2a2cc3439481022105f94de6033c5 data/season_shop/loot_tables/blocks/shop_block.json

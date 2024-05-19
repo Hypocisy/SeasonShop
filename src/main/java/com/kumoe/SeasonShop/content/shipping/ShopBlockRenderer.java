@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.entity.LidBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 
-public class ShippingBinRenderer<T extends ShippingBinBlockEntity & LidBlockEntity> extends ChestRenderer<T> {
+public class ShopBlockRenderer<T extends ShopBlockEntity & LidBlockEntity> extends ChestRenderer<T> {
     private final ModelPart lid;
     private final ModelPart bottom;
     private final ModelPart lock;
@@ -35,11 +35,11 @@ public class ShippingBinRenderer<T extends ShippingBinBlockEntity & LidBlockEnti
     private final ModelPart doubleRightBottom;
     private final ModelPart doubleRightLock;
 
-    private static final ResourceLocation SINGLE_CHEST = new ResourceLocation(SeasonShop.MODID,"entity/chest/shipping_bin");
-    private static final ResourceLocation LEFT_CHEST = new ResourceLocation(SeasonShop.MODID,"entity/chest/shipping_bin_left");
-    private static final ResourceLocation RIGHT_CHEST = new ResourceLocation(SeasonShop.MODID,"entity/chest/shipping_bin_right");
+    private static final ResourceLocation SINGLE_CHEST = new ResourceLocation(SeasonShop.MODID,"entity/chest/shop_block");
+    private static final ResourceLocation LEFT_CHEST = new ResourceLocation(SeasonShop.MODID,"entity/chest/shop_block_left");
+    private static final ResourceLocation RIGHT_CHEST = new ResourceLocation(SeasonShop.MODID,"entity/chest/shop_block_right");
 
-    public ShippingBinRenderer(BlockEntityRendererProvider.Context pContext) {
+    public ShopBlockRenderer(BlockEntityRendererProvider.Context pContext) {
         super(pContext);
         ModelPart modelpart = pContext.bakeLayer(ModelLayers.CHEST);
         this.bottom = modelpart.getChild("bottom");
@@ -71,7 +71,7 @@ public class ShippingBinRenderer<T extends ShippingBinBlockEntity & LidBlockEnti
         BlockState blockstate = flag ? pBlockEntity.getBlockState() : Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, Direction.SOUTH);
         ChestType chesttype = blockstate.hasProperty(ChestBlock.TYPE) ? blockstate.getValue(ChestBlock.TYPE) : ChestType.SINGLE;
         Block block = blockstate.getBlock();
-        if (block instanceof ShippingBinBlock shippingBinBlock) {
+        if (block instanceof ShopBlock shopBlock) {
 
             boolean flag1 = chesttype != ChestType.SINGLE;
 
@@ -80,15 +80,15 @@ public class ShippingBinRenderer<T extends ShippingBinBlockEntity & LidBlockEnti
             pPoseStack.translate(0.5F, 0.5F, 0.5F);
             pPoseStack.mulPose(Axis.YP.rotationDegrees(-f));
             pPoseStack.translate(-0.5F, -0.5F, -0.5F);
-            DoubleBlockCombiner.NeighborCombineResult<? extends ShippingBinBlockEntity> neighborcombineresult;
+            DoubleBlockCombiner.NeighborCombineResult<? extends ShopBlockEntity> neighborcombineresult;
 
             if (flag) {
-                neighborcombineresult = shippingBinBlock.combine(blockstate, level, pBlockEntity.getBlockPos(), true);
+                neighborcombineresult = shopBlock.combine(blockstate, level, pBlockEntity.getBlockPos(), true);
             } else {
                 neighborcombineresult = DoubleBlockCombiner.Combiner::acceptNone;
             }
 
-            float f1 = neighborcombineresult.apply(ShippingBinBlock.opennesscombiner(pBlockEntity)).get(pPartialTick);
+            float f1 = neighborcombineresult.apply(ShopBlock.opennesscombiner(pBlockEntity)).get(pPartialTick);
             f1 = 1.0F - f1;
             f1 = 1.0F - f1 * f1 * f1;
             int i = neighborcombineresult.apply(new BrightnessCombiner<>()).applyAsInt(pPackedLight);

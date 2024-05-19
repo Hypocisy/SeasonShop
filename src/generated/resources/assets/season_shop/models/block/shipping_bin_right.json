@@ -1,7 +1,7 @@
 {
-  "parent": "season_shop:custom/block/shipping_bin_right",
+  "parent": "season_shop:custom/shipping_bin_right",
   "render_type": "minecraft:cutout",
   "textures": {
-    "right": "season_shop:block/shipping_bin_large"
+    "right": "season_shop:block/shipping_bin_right"
   }
 }

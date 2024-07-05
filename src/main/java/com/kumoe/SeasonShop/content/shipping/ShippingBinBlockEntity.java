@@ -3,7 +3,9 @@ package com.kumoe.SeasonShop.content.shipping;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -18,6 +20,8 @@ import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 public class ShippingBinBlockEntity extends ChestBlockEntity {
 
@@ -40,6 +44,8 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
             return pPlayer.containerMenu instanceof ShippingBinMenu;
         }
     };
+    private ServerPlayer player;
+    private UUID uuid;
 
     public ShippingBinBlockEntity(BlockEntityType<? extends ShippingBinBlockEntity> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
@@ -74,7 +80,6 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
         if (!this.remove && !pPlayer.isSpectator()) {
             this.openersCounter.decrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
-
     }
 
     @Nullable
@@ -105,5 +110,26 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
         } else {
             return super.triggerEvent(pId, pType);
         }
+    }
+
+    @Override
+    public void load(CompoundTag pTag) {
+        uuid = pTag.getUUID("ownEntity.playerUuid");
+        super.load(pTag);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag pTag) {
+        pTag.putUUID("ownEntity.playerUuid", uuid);
+        super.saveAdditional(pTag);
+    }
+
+    public ServerPlayer getOwner() {
+        return player;
+    }
+
+    public void setOwner(ServerPlayer player) {
+        this.player = player;
+        this.uuid = player.getUUID();
     }
 }

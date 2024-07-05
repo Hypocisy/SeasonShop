@@ -1,4 +1,4 @@
-package com.kumoe.SeasonShop.api.Configs;
+package com.kumoe.SeasonShop.data.config;
 
 import com.kumoe.SeasonShop.init.SeasonShop;
 import net.minecraftforge.fml.config.ModConfig;
@@ -6,10 +6,7 @@ import net.minecraftforge.fml.config.ModConfig;
 public final class SeasonShopConfig {
 
     public static boolean enableDebug;
-    public static double springPrice;
-    public static double summerPrice;
-    public static double autumnPrice;
-    public static double winterPrice;
+    public static int maxBindBlock;
 
     public static Config config = SeasonShop.getInstance().getConfig();
 
@@ -21,10 +18,7 @@ public final class SeasonShopConfig {
     private static void initGeneralSettings() {
         try {
             enableDebug = config.enableDebug.get();
-            springPrice = config.springPrice.get();
-            summerPrice = config.summerPrice.get();
-            autumnPrice = config.autumnPrice.get();
-            winterPrice = config.winterPrice.get();
+            maxBindBlock = config.maxBindBlock.get();
         } catch (Exception var) {
             SeasonShop.getLogger().trace("An exception was caused trying to load the config for GeneralSettings.\n%s".formatted(var));
         }

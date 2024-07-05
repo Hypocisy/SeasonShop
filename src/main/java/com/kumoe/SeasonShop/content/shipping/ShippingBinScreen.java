@@ -1,6 +1,7 @@
 package com.kumoe.SeasonShop.content.shipping;
 
 
+import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.init.SeasonShop;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
@@ -9,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -38,17 +40,22 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
         this.addRenderableWidget(button);
     }
 
+    protected void sellAllItems(){
+        double itemValue = 0f;
+        for (Slot slot: this.menu.slots){
+            if (slot instanceof SeasonSlot){
+                itemValue += ModUtils.getTotalItemPrice(slot.getItem());
+                slot.getItem().setCount(0);
+                slot.setChanged();
+            }
+        }
+    }
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pGuiGraphics);
         this.inventoryLabelY = this.imageHeight - 98;
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
-    }
-
-    @Override
-    protected void renderTooltip(GuiGraphics pGuiGraphics, int pX, int pY) {
-        super.renderTooltip(pGuiGraphics, pX, pY);
     }
 
     @Override

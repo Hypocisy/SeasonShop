@@ -144,15 +144,6 @@ repositories {
     maven {
         url "https://maven.blamejared.com"
     }
-    maven {
-        name = 'GeckoLib'
-        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
-        content {
-            includeGroupByRegex("software\\.bernie.*")
-            includeGroup("com.eliotlash.mclib")
-        }
-    }
-
 
     mavenLocal()
     mavenCentral()
@@ -165,16 +156,16 @@ dependencies {
     // If the group id is "net.minecraft" and the artifact id is one of ["client", "server", "joined"],
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    compileOnly(annotationProcessor("io.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
-    if (rootMod.toBoolean()) {
-        implementation(jarJar("io.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")) {
-            transitive = false
-            jarJar.ranged(it, "[${mixin_extras_version},)")
-        }
-    } else {
-        implementation("io.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")
-    }
-    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
+//    compileOnly(annotationProcessor("io.github.llamalad7.mixinextras:mixinextras-common:${mixin_extras_version}"))
+//    if (rootMod.toBoolean()) {
+//        implementation(jarJar("io.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")) {
+//            transitive = false
+//            jarJar.ranged(it, "[${mixin_extras_version},)")
+//        }
+//    } else {
+//        implementation("io.github.llamalad7.mixinextras:mixinextras-forge:${mixin_extras_version}")
+//    }
+//    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
 //    compileOnly fg.deobf("curse.maven:serene-seasons-291874:4761603")
 //    runtimeOnly fg.deobf("curse.maven:serene-seasons-291874:4761603")
@@ -182,8 +173,9 @@ dependencies {
     // MC<minecraft_version>-<registrate_version>
     implementation fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.11")
     // [MC<minecraft_version>,MC<next_minecraft_version>)
-    jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: "[MC1.19.3,MC1.20)")
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.4')
+    jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: "[MC1.20,MC1.21)")
+
+//    implementation fg.deobf("curse.maven:l2library-620203:5355117")
 }
 
 mixin {

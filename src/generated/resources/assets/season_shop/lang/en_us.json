@@ -1,4 +1,7 @@
 {
   "block.season_shop.shipping_bin": "Shipping Bin",
-  "block.season_shop.shop_block": "Shop Block"
+  "block.season_shop.shop_block": "Shop Block",
+  "season_shop.block.season_shop.shipping_bin.tips": "You can only place up to %s of these blocks!",
+  "season_shop.block.season_shop.shipping_bin.tooltip_1": "单价: %s",
+  "season_shop.block.season_shop.shipping_bin.tooltip_2": "总价: %s"
 }

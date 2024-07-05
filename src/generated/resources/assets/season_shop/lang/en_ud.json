@@ -1,4 +1,7 @@
 {
   "block.season_shop.shipping_bin": "uıᗺ buıddıɥS",
-  "block.season_shop.shop_block": "ʞɔoןᗺ doɥS"
+  "block.season_shop.shop_block": "ʞɔoןᗺ doɥS",
+  "season_shop.block.season_shop.shipping_bin.tips": "¡sʞɔoןq ǝsǝɥʇ ɟo %s oʇ dn ǝɔɐןd ʎןuo uɐɔ noʎ",
+  "season_shop.block.season_shop.shipping_bin.tooltip_1": "%s :价单",
+  "season_shop.block.season_shop.shipping_bin.tooltip_2": "%s :价总"
 }

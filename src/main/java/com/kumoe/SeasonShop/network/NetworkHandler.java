@@ -6,17 +6,15 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class NetworkHandler {
-    static int id = 0;
     private static final String PROTOCOL_VERSION = "1";
-    private static final SimpleChannel NETWORK = NetworkRegistry.newSimpleChannel(
+    private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(SeasonShop.MODID, "main"),
-            () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals);
-    public static void registerMessages() {
-//        NETWORK.registerMessage(id++, OpenGui2Packet.class,OpenGui2Packet::encode, OpenGui2Packet::decode,OpenGui2Packet::handle);
-    }
+            () -> PROTOCOL_VERSION,
+            PROTOCOL_VERSION::equals,
+            PROTOCOL_VERSION::equals
+    );
 
     public static SimpleChannel getNetwork() {
-        return NETWORK;
+        return CHANNEL;
     }
 }

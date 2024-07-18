@@ -38,7 +38,6 @@ import java.util.function.BiPredicate;
 public class ShopBlock extends ChestBlock {
     static final DoubleBlockCombiner.Combiner<ShopBlockEntity, Optional<MenuProvider>> MENU_PROVIDER_COMBINER = new DoubleBlockCombiner.Combiner<>() {
         public Optional<MenuProvider> acceptDouble(final ShopBlockEntity chestBlockEntity1, final ShopBlockEntity chestBlockEntity2) {
-            final Container container = new CompoundContainer(chestBlockEntity1, chestBlockEntity2);
             return Optional.of(new MenuProvider() {
                 @Nullable
                 @Override

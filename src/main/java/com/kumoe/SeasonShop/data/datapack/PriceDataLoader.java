@@ -1,7 +1,6 @@
 package com.kumoe.SeasonShop.data.datapack;
 
 
-import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.kumoe.SeasonShop.init.SeasonShop;
@@ -15,21 +14,21 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import org.slf4j.Logger;
 
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.Map;
 
 public class PriceDataLoader<T extends PriceData> extends SimplePreparableReloadListener<Map<ResourceLocation, T>> {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String FOLDER = "prices";
     private static final String PATH = "price_setting";
-    private static final ResourceLocation priceSetting = new ResourceLocation(FOLDER, PATH);
-    private final Map<ResourceLocation, T> loader = Maps.newHashMap();
+    private final Map<ResourceLocation, T> loader = new HashMap<>();
 
     @Override
     public Map<ResourceLocation, T> prepare(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
         pProfiler.startTick();
         pProfiler.push("loading item price data...");
         // season_shop/data/season_shop
-        var loader = listResources(pResourceManager,pProfiler);
+        var loader = listResources(pResourceManager, pProfiler);
 
         pProfiler.pop();
 
@@ -72,6 +71,7 @@ public class PriceDataLoader<T extends PriceData> extends SimplePreparableReload
     }
 
     public Map<ResourceLocation, T> getLoader() {
+
         return loader;
     }
 }

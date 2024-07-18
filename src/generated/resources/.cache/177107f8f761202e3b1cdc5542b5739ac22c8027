@@ -1,8 +1,8 @@
-// 1.20.1	2024-05-19T19:57:04.3946948	Registrate Provider for season_shop [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.20.1	2024-07-05T14:07:11.5943386	Registrate Provider for season_shop [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 ce07bb3313aa4fb8565c53c39ecbd2a6e2641905 assets/season_shop/blockstates/shipping_bin.json
 bb047b35d6c498cf1aa83adea7204ece73945c12 assets/season_shop/blockstates/shop_block.json
-614f12c40befbb1ad13c2c7a6111ccc8639dae8e assets/season_shop/lang/en_ud.json
-8045476ab1dc1c070f5796fba5adbebdacbea95c assets/season_shop/lang/en_us.json
+f19e4c853fc9eb5382a8033ce904c54fe83e0d72 assets/season_shop/lang/en_ud.json
+ed5b7b326e68011221bae2de52f2eff23166f3e3 assets/season_shop/lang/en_us.json
 8116756b6ea50fd51e4f3105a9a47d242f4b74f4 assets/season_shop/models/block/shipping_bin.json
 aa01d83774521e66503dec7f72db830cff7c6b1a assets/season_shop/models/block/shipping_bin_left.json
 38f99af5ed5c79fbbb0b99833a849835e4f9482e assets/season_shop/models/block/shipping_bin_right.json

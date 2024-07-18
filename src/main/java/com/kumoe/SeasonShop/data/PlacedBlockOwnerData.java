@@ -11,38 +11,44 @@ import java.util.UUID;
 
 public class PlacedBlockOwnerData extends SavedData {
     private static final String DATA_NAME = "PlacedBlockOwnersData";
-    private final Map<UUID, Integer> placedBlockOwners = new HashMap<>();
+    private final static Map<UUID, Integer> placedBlockOwners = new HashMap<>();
 
     public static PlacedBlockOwnerData load(CompoundTag pCompoundTag) {
         PlacedBlockOwnerData data = new PlacedBlockOwnerData();
-        ListTag listTag = pCompoundTag.getList("PlacedBlockOwners", ListTag.TAG_COMPOUND);
+        ListTag listTag = pCompoundTag.getList("PlacedBlockCounts", ListTag.TAG_COMPOUND);
         for (int i = 0; i < listTag.size(); i++) {
             CompoundTag tag = listTag.getCompound(i);
-            UUID uuid = UUID.fromString(tag.getString("uuid"));
-            int count = tag.getInt("count");
+            UUID uuid = tag.getUUID("UUID");
+            int count = tag.getInt("Count");
             data.placedBlockOwners.put(uuid, count);
         }
         return data;
+
+    }
+
+    public static int getCount(UUID uuid) {
+        return placedBlockOwners.getOrDefault(uuid, 0);
+    }
+
+    public static void setCount(UUID player, int count) {
+        placedBlockOwners.put(player, count);
+    }
+
+    public static PlacedBlockOwnerData get(ServerLevel level) {
+        return level.getDataStorage().computeIfAbsent(PlacedBlockOwnerData::load, PlacedBlockOwnerData::new, DATA_NAME);
     }
 
     @Override
-    public CompoundTag save(CompoundTag pCompoundTag) {
+    public CompoundTag save(CompoundTag tag) {
         ListTag listTag = new ListTag();
         for (Map.Entry<UUID, Integer> entry : placedBlockOwners.entrySet()) {
             CompoundTag playerTag = new CompoundTag();
             playerTag.putUUID("UUID", entry.getKey());
             playerTag.putInt("Count", entry.getValue());
-            pCompoundTag.merge(playerTag);
+            listTag.add(playerTag);
         }
-        return pCompoundTag;
-    }
-
-    public Map<UUID, Integer> getPlacedBlockOwners() {
-        return placedBlockOwners;
-    }
-
-    public static PlacedBlockOwnerData get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(PlacedBlockOwnerData::load,PlacedBlockOwnerData::new, DATA_NAME);
+        tag.put("PlacedBlockCounts", listTag);
+        return tag;
     }
 
 }

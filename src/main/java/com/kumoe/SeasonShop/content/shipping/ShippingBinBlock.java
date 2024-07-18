@@ -39,7 +39,6 @@ public class ShippingBinBlock extends ChestBlock {
 
     static final DoubleBlockCombiner.Combiner<ShippingBinBlockEntity, Optional<MenuProvider>> MENU_PROVIDER_COMBINER = new DoubleBlockCombiner.Combiner<>() {
         public Optional<MenuProvider> acceptDouble(final ShippingBinBlockEntity chestBlockEntity1, final ShippingBinBlockEntity chestBlockEntity2) {
-            final Container container = new CompoundContainer(chestBlockEntity1, chestBlockEntity2);
             return Optional.of(new MenuProvider() {
                 @Nullable
                 @Override
@@ -146,9 +145,10 @@ public class ShippingBinBlock extends ChestBlock {
         return this.combine(pState, pLevel, pPos, false).apply(MENU_PROVIDER_COMBINER).orElse(null);
     }
 
-    // do nothing
+    // Client tick
     @Override
-    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {}
+    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
+    }
 
     @Nullable
     @Override

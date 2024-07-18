@@ -3,6 +3,8 @@ package com.kumoe.SeasonShop.content.shipping;
 
 import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.init.SeasonShop;
+import com.kumoe.SeasonShop.network.NetworkHandler;
+import com.kumoe.SeasonShop.network.PricesPacket;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -10,7 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -36,26 +38,34 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
     protected void init() {
         super.init();
         ImageButton button = new ImageButton((this.width - this.imageWidth - 10) / 2 + 143, (this.height - this.imageHeight - 2) / 2 + 50, 16, 16, this.imageWidth, 0, 16, SHIPPING_BIN_GUI,
-                (pOnPress) -> player.closeContainer());
+                (pOnPress) -> {
+                    SeasonShop.getLogger().debug("Now sell items");
+                    var totalPrice = 0d;
+                    for (ItemStack itemStack : this.container.getItems()) {
+                        totalPrice += ModUtils.getTotalItemPrice(itemStack);
+                    }
+                    // remove sold items
+                    this.container.getItems().clear();
+
+                    if (this.container.getOwner() != null) {
+                        NetworkHandler.sendToServer(PricesPacket.create(this.container.getOwner(), totalPrice));
+                        this.container.setChanged();
+                    }
+                });
         this.addRenderableWidget(button);
     }
 
-    protected void sellAllItems(){
-        double itemValue = 0f;
-        for (Slot slot: this.menu.slots){
-            if (slot instanceof SeasonSlot){
-                itemValue += ModUtils.getTotalItemPrice(slot.getItem());
-                slot.getItem().setCount(0);
-                slot.setChanged();
-            }
-        }
-    }
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pGuiGraphics);
         this.inventoryLabelY = this.imageHeight - 98;
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
+    }
+
+    @Override
+    protected void renderTooltip(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
+        super.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
 
     @Override

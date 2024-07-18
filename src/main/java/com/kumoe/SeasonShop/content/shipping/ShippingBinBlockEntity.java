@@ -1,16 +1,21 @@
 package com.kumoe.SeasonShop.content.shipping;
 
+import com.kumoe.SeasonShop.api.ModUtils;
+import com.kumoe.SeasonShop.init.SeasonShop;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
+import com.kumoe.SeasonShop.network.NetworkHandler;
+import com.kumoe.SeasonShop.network.PricesPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -25,6 +30,7 @@ import java.util.UUID;
 
 public class ShippingBinBlockEntity extends ChestBlockEntity {
 
+    protected static final int containerSize = 18;
     private final ChestLidController chestLidController;
     private final ContainerOpenersCounter openersCounter = new ContainerOpenersCounter() {
         protected void onOpen(Level level, BlockPos blockPos, BlockState state) {
@@ -44,7 +50,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
             return pPlayer.containerMenu instanceof ShippingBinMenu;
         }
     };
-    private ServerPlayer player;
+    private final NonNullList<ItemStack> items = NonNullList.withSize(18, ItemStack.EMPTY);
     private UUID uuid;
 
     public ShippingBinBlockEntity(BlockEntityType<? extends ShippingBinBlockEntity> pType, BlockPos pPos, BlockState pBlockState) {
@@ -67,6 +73,31 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
 
     protected static void lidAnimateTick(Level pLevel, BlockPos pPos, BlockState pState, ShippingBinBlockEntity pBlockEntity) {
         pBlockEntity.getChestLidController().tickLid();
+//        SeasonShop.getLogger().debug("Current game time: {}", pLevel.getGameTime());
+        if (pLevel.getGameTime() % 18000 == 0) {
+            // todo: send a packet to sell item
+            // todo: render how much player sold
+            SeasonShop.getLogger().debug("Now sell items");
+            var totalPrice = 0d;
+            for (ItemStack itemStack : pBlockEntity.items) {
+                totalPrice += ModUtils.getTotalItemPrice(itemStack);
+            }
+            // remove sold items
+            pBlockEntity.items.clear();
+            pBlockEntity.setChanged();
+            if (pBlockEntity.getOwner() != null) {
+                try {
+                    NetworkHandler.sendToServer(PricesPacket.create(pBlockEntity.getOwner(), totalPrice));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
+    public int getContainerSize() {
+        return containerSize;
     }
 
     public void startOpen(Player pPlayer) {
@@ -114,22 +145,35 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
 
     @Override
     public void load(CompoundTag pTag) {
-        uuid = pTag.getUUID("ownEntity.playerUuid");
         super.load(pTag);
+        if (!pTag.isEmpty() && pTag.contains("ownEntity.playerUuid")) {
+            uuid = pTag.getUUID("ownEntity.playerUuid");
+        }
+
     }
 
     @Override
     protected void saveAdditional(CompoundTag pTag) {
-        pTag.putUUID("ownEntity.playerUuid", uuid);
         super.saveAdditional(pTag);
+        SeasonShop.getLogger().debug("save pTag data: " + pTag);
+        if (!pTag.isEmpty() && uuid != null) {
+            pTag.putUUID("ownEntity.playerUuid", uuid);
+        }
+
+
     }
 
-    public ServerPlayer getOwner() {
-        return player;
+    @Nullable
+    public UUID getOwner() {
+        return uuid;
     }
 
-    public void setOwner(ServerPlayer player) {
-        this.player = player;
-        this.uuid = player.getUUID();
+    public void setOwner(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    @Override
+    protected NonNullList<ItemStack> getItems() {
+        return items;
     }
 }

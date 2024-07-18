@@ -34,10 +34,10 @@ public class ModUtils {
 
 
     public static Price getItemPriceObject(ItemStack stack) {
-        var priceData = priceDataMap.get(new ResourceLocation("season_shop", "prices/price_setting.json")).prices();
+        var priceData = priceDataMap.get(new ResourceLocation("season_shop", "prices/price_setting.json"));
 
         if (priceData != null) {
-            return priceData.get(stackToResourceLocation(stack));
+            return priceData.prices().get(stackToResourceLocation(stack));
         }
         return null;
     }
@@ -63,10 +63,10 @@ public class ModUtils {
      */
     public static double getCurrentSeasonPrice(Price itemPrice) {
         return switch (SeasonHandler.getClientSeasonTime().getSeason()) {
-            case SPRING -> itemPrice.springPrice().orElse(0.1);
-            case SUMMER -> itemPrice.summerPrice().orElse(0.1);
-            case AUTUMN -> itemPrice.autumnPrice().orElse(0.1);
-            case WINTER -> itemPrice.winterPrice().orElse(0.1);
+            case SPRING -> itemPrice.springPrice().orElse(0d);
+            case SUMMER -> itemPrice.summerPrice().orElse(0d);
+            case AUTUMN -> itemPrice.autumnPrice().orElse(0d);
+            case WINTER -> itemPrice.winterPrice().orElse(0d);
         };
     }
 }

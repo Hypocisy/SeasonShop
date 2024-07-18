@@ -14,8 +14,4 @@ public record Price(Optional<Double> basePrice, Optional<Double> springPrice, Op
             Codec.DOUBLE.optionalFieldOf("autumnPrice").forGetter(Price::autumnPrice),
             Codec.DOUBLE.optionalFieldOf("winterPrice").forGetter(Price::winterPrice)
     ).apply(instance, Price::new));
-
-    public Price() {
-        this(Optional.of(0.1), Optional.of(0.1), Optional.of(0.1), Optional.of(0.1), Optional.of(0.1));
-    }
 }

@@ -8,7 +8,6 @@ import com.kumoe.SeasonShop.content.shipping.ShopScreen;
 import com.kumoe.SeasonShop.data.PlacedBlockOwnerData;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.init.SeasonShop;
-import com.mojang.logging.LogUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -21,16 +20,13 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.slf4j.Logger;
 
-import java.util.Map;
 import java.util.UUID;
 
 import static com.kumoe.SeasonShop.data.SSLangData.*;
 
 @Mod.EventBusSubscriber(modid = SeasonShop.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class Events {
-    private static final Logger LOGGER = LogUtils.getLogger();
+public class ServerEvents {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
@@ -56,7 +52,8 @@ public class Events {
     }
 
     @SubscribeEvent
-    public static void addResourceListener(AddReloadListenerEvent event) {
+    public static void addReloadListener(AddReloadListenerEvent event) {
+//        SeasonShop.getLogger().debug("add reload listener  " + SeasonShop.getPriceLoader().toString());
         event.addListener(SeasonShop.getPriceLoader());
     }
 
@@ -65,21 +62,25 @@ public class Events {
         if (event.getEntity() instanceof ServerPlayer serverPlayer && serverPlayer.level() instanceof ServerLevel serverLevel &&
                 serverLevel.getBlockEntity(event.getPos()) instanceof ShippingBinBlockEntity shippingBe) {
             PlacedBlockOwnerData data = PlacedBlockOwnerData.get(serverLevel);
-            Map<UUID, Integer> placedBlockOwners = data.getPlacedBlockOwners();
 
             UUID playerUUID = serverPlayer.getUUID();
-            int count = placedBlockOwners.getOrDefault(playerUUID, 0);
-            int maxCount = SeasonShopConfig.maxBindBlock;
-            System.out.println(maxCount);
-            if (count >= maxCount) {
-                event.setCanceled(true);
-                serverPlayer.displayClientMessage(Component.translatable(SHIPPING_BIN_TIPS.key(), maxCount).withStyle(SHIPPING_BIN_TIPS.format()), false);
-            } else {
-                shippingBe.setOwner(serverPlayer);
-                placedBlockOwners.put(playerUUID, count + 1);
-                shippingBe.setChanged();
-                data.setDirty();
+
+//            SeasonShop.getLogger().debug("player uuid: " + playerUUID);
+
+            if (playerUUID != null) {
+                int count = PlacedBlockOwnerData.getCount(playerUUID);
+                if (count < SeasonShopConfig.maxBindBlock) {
+                    shippingBe.setOwner(playerUUID);
+                    PlacedBlockOwnerData.setCount(playerUUID, count + 1);
+                    shippingBe.setChanged();
+                    data.setDirty();
+                } else {
+                    event.setCanceled(true);
+                    serverPlayer.displayClientMessage(Component.translatable(SHIPPING_BIN_TIPS.key(), SeasonShopConfig.maxBindBlock).withStyle(SHIPPING_BIN_TIPS.format()), false);
+                }
+
             }
+
         }
     }
 
@@ -87,13 +88,13 @@ public class Events {
     public static void onPlayerBreakBlock(BlockEvent.BreakEvent event) {
         if (event.getPlayer() instanceof ServerPlayer serverPlayer && serverPlayer.level() instanceof ServerLevel serverLevel &&
                 serverLevel.getBlockEntity(event.getPos()) instanceof ShippingBinBlockEntity shippingBe) {
-            if (shippingBe.getOwner() != null){
-                UUID playerUUID = shippingBe.getOwner().getUUID();
+            SeasonShop.getLogger().debug(shippingBe.getOwner().toString());
+            if (shippingBe.getOwner() != null) {
+                UUID playerUUID = shippingBe.getOwner();
                 PlacedBlockOwnerData data = PlacedBlockOwnerData.get(serverLevel);
-                Map<UUID, Integer> placedBlockOwners = data.getPlacedBlockOwners();
-                int count = placedBlockOwners.getOrDefault(playerUUID, 0);
+                int count = PlacedBlockOwnerData.getCount(playerUUID);
                 if (count > 0) {
-                    placedBlockOwners.put(playerUUID, count - 1);
+                    PlacedBlockOwnerData.setCount(playerUUID, count - 1);
                     data.setDirty();
                 }
             }

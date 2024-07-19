@@ -74,7 +74,29 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
     protected static void lidAnimateTick(Level pLevel, BlockPos pPos, BlockState pState, ShippingBinBlockEntity pBlockEntity) {
         pBlockEntity.getChestLidController().tickLid();
 //        SeasonShop.getLogger().debug("Current game time: {}", pLevel.getGameTime());
-        if (pLevel.getGameTime() % 18000 == 0) {
+        if (pLevel.getServer() != null && pLevel.getServer().getTickCount() % 18000 == 0) {
+            // todo: send a packet to sell item
+            // todo: render how much player sold
+            SeasonShop.getLogger().debug("Now sell items");
+            var totalPrice = 0d;
+            for (ItemStack itemStack : pBlockEntity.items) {
+                totalPrice += ModUtils.getTotalItemPrice(itemStack);
+            }
+            // remove sold items
+            pBlockEntity.items.clear();
+
+            if (pBlockEntity.getOwner() != null) {
+                try {
+                    NetworkHandler.sendToServer(PricesPacket.create(pBlockEntity.getOwner(), totalPrice, pPos));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    protected static void serverTick(Level pLevel, BlockPos pPos, BlockState pState, ShippingBinBlockEntity pBlockEntity) {
+        if (pLevel.getServer() != null && pLevel.getServer().getTickCount() % 18000 == 0) {
             // todo: send a packet to sell item
             // todo: render how much player sold
             SeasonShop.getLogger().debug("Now sell items");
@@ -85,9 +107,10 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
             // remove sold items
             pBlockEntity.items.clear();
             pBlockEntity.setChanged();
+
             if (pBlockEntity.getOwner() != null) {
                 try {
-                    NetworkHandler.sendToServer(PricesPacket.create(pBlockEntity.getOwner(), totalPrice));
+                    NetworkHandler.sendToServer(PricesPacket.create(pBlockEntity.getOwner(), totalPrice,pPos));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -100,6 +123,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
         return containerSize;
     }
 
+    @Override
     public void startOpen(Player pPlayer) {
         if (!this.remove && !pPlayer.isSpectator()) {
             this.openersCounter.incrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
@@ -107,6 +131,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
 
     }
 
+    @Override
     public void stopOpen(Player pPlayer) {
         if (!this.remove && !pPlayer.isSpectator()) {
             this.openersCounter.decrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
@@ -126,7 +151,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("block.season_shop.shipping_bin");
+        return getCustomName() == null ? Component.translatable("block.season_shop.shipping_bin") : getCustomName();
     }
 
     public ChestLidController getChestLidController() {
@@ -155,17 +180,13 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
     @Override
     protected void saveAdditional(CompoundTag pTag) {
         super.saveAdditional(pTag);
-        SeasonShop.getLogger().debug("save pTag data: " + pTag);
         if (!pTag.isEmpty() && uuid != null) {
             pTag.putUUID("ownEntity.playerUuid", uuid);
         }
-
-
     }
 
-    @Nullable
     public UUID getOwner() {
-        return uuid;
+        return this.uuid;
     }
 
     public void setOwner(UUID uuid) {
@@ -173,7 +194,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
     }
 
     @Override
-    protected NonNullList<ItemStack> getItems() {
-        return items;
+    public NonNullList<ItemStack> getItems() {
+        return this.items;
     }
 }

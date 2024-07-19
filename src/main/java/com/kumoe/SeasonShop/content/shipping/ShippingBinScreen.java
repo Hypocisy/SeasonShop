@@ -41,15 +41,17 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
                 (pOnPress) -> {
                     SeasonShop.getLogger().debug("Now sell items");
                     var totalPrice = 0d;
-                    for (ItemStack itemStack : this.container.getItems()) {
-                        totalPrice += ModUtils.getTotalItemPrice(itemStack);
-                    }
-                    // remove sold items
-                    this.container.getItems().clear();
-
-                    if (this.container.getOwner() != null) {
-                        NetworkHandler.sendToServer(PricesPacket.create(this.container.getOwner(), totalPrice));
-                        this.container.setChanged();
+                    if (!this.container.getItems().isEmpty()) {
+                        for (ItemStack itemStack : this.container.getItems()) {
+                            totalPrice += ModUtils.getTotalItemPrice(itemStack);
+                        }
+                        if (this.container.getOwner() != null) {
+                            this.container.clearContent();
+                            NetworkHandler.sendToServer(PricesPacket.create(this.container.getOwner(), totalPrice, this.container.getBlockPos()));
+                            this.container.setChanged();
+                        }
+                    }else {
+                        this.onClose();
                     }
                 });
         this.addRenderableWidget(button);

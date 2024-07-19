@@ -22,17 +22,15 @@ public class NetworkHandler {
                 .clientAcceptedVersions(s -> true)
                 .serverAcceptedVersions(s -> true)
                 .simpleChannel();
+//        SimpleChannel net = NetworkRegistry.newSimpleChannel(SeasonShop.id("main"), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
         INSTANCE = net;
 
-//        CHANNEL.registerMessage(++id, PricesPacket.class, PricesPacket::encode, PricesPacket::decode, PricesPacket::handle);
-        net.messageBuilder(PricesPacket.class, getId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PricesPacket::encode)
-                .decoder(PricesPacket::decode)
-                .consumerMainThread(PricesPacket::handle).add();
+        net.registerMessage(getId(), PricesPacket.class, PricesPacket::encode, PricesPacket::decode, PricesPacket::handle);
+
         net.messageBuilder(S2CPriceSyncPacket.class, getId(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(S2CPriceSyncPacket::decode)
                 .encoder(S2CPriceSyncPacket::encode)
-                .consumerMainThread(S2CPriceSyncPacket::handle).add();
+                .consumerNetworkThread(S2CPriceSyncPacket::handle).add();
     }
 
 

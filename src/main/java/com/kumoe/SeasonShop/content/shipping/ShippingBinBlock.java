@@ -10,7 +10,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.*;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -30,6 +32,7 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -119,7 +122,10 @@ public class ShippingBinBlock extends ChestBlock {
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
             if (pLevel.getBlockEntity(pPos) instanceof ShippingBinBlockEntity blockEntity) {
-                NetworkHooks.openScreen((ServerPlayer) pPlayer, blockEntity, pPos);
+                NetworkHooks.openScreen((ServerPlayer) pPlayer, blockEntity, byteBuf -> {
+                    byteBuf.writeBlockPos(pPos);
+                    byteBuf.writeUUID(blockEntity.getOwner());
+                });
                 pPlayer.awardStat(this.getOpenChestStat());
                 PiglinAi.angerNearbyPiglins(pPlayer, true);
             }

@@ -1,5 +1,6 @@
 package com.kumoe.SeasonShop.content.shipping;
 
+import com.kumoe.SeasonShop.init.SeasonShop;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -8,9 +9,9 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class ShippingBinMenu extends AbstractContainerMenu {
     protected final ShippingBinBlockEntity container;
@@ -27,19 +28,24 @@ public class ShippingBinMenu extends AbstractContainerMenu {
         this.container.startOpen(pPlayerInventory.player);
     }
 
-    public ShippingBinMenu(MenuType<ShippingBinMenu> menu, int windowId, Inventory pPlayerInventory, @Nullable FriendlyByteBuf data) {
+    public ShippingBinMenu(MenuType<ShippingBinMenu> menu, int windowId, Inventory pPlayerInventory, FriendlyByteBuf data) {
         this(menu, windowId, pPlayerInventory, getTileEntity(pPlayerInventory, data));
     }
 
-    private static ShippingBinBlockEntity getTileEntity(Inventory playerInventory, @Nullable FriendlyByteBuf data) {
+    private static ShippingBinBlockEntity getTileEntity(Inventory playerInventory, FriendlyByteBuf data) {
         Objects.requireNonNull(playerInventory, "playerInventory cannot be null");
         Objects.requireNonNull(data, "data cannot be null");
         BlockEntity tileAtPos = playerInventory.player.level().getBlockEntity(data.readBlockPos());
         if (tileAtPos instanceof ShippingBinBlockEntity bin) {
+            bin.setOwner(data.readUUID());
             return bin;
         } else {
             throw new IllegalStateException("Tile entity is not correct! " + tileAtPos);
         }
+    }
+
+    public static ShippingBinMenu factory(MenuType<ShippingBinMenu> shippingBinMenuMenuType, int i, Inventory inventory, FriendlyByteBuf byteBuf) {
+        return new ShippingBinMenu(shippingBinMenuMenuType, i, inventory, byteBuf);
     }
 
     void addSlot() {
@@ -63,7 +69,6 @@ public class ShippingBinMenu extends AbstractContainerMenu {
             this.addSlot(new Slot(this.playerInventory, row, 8 + row * 18, 179 + e));
         }
     }
-
 
     /**
      * @param player 玩家
@@ -108,5 +113,10 @@ public class ShippingBinMenu extends AbstractContainerMenu {
     public void removed(Player pPlayer) {
         super.removed(pPlayer);
         this.container.stopOpen(pPlayer);
+    }
+
+    @Override
+    public boolean clickMenuButton(Player pPlayer, int pId) {
+        return super.clickMenuButton(pPlayer, pId);
     }
 }

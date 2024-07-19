@@ -34,7 +34,7 @@ public class SeasonShopBlocks {
     }
 
     private static void registerMenu() {
-        SHIPPING_BIN_BLOCK_MENU = SeasonShop.REGISTRATE.menu("shipping_bin_block_menu", ShippingBinMenu::new, () -> ShippingBinScreen::new).register();
+        SHIPPING_BIN_BLOCK_MENU = SeasonShop.REGISTRATE.menu("shipping_bin_block_menu", ShippingBinMenu::factory, () -> ShippingBinScreen::new).register();
         SHOP_BLOCK_MENU = SeasonShop.REGISTRATE.menu("shop_block_menu", ShopMenu::new, () -> ShopScreen::new).register();
     }
 

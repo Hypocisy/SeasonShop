@@ -1,6 +1,5 @@
 package com.kumoe.SeasonShop.content.shipping;
 
-import com.kumoe.SeasonShop.init.SeasonShop;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -11,7 +10,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Objects;
-import java.util.UUID;
 
 public class ShippingBinMenu extends AbstractContainerMenu {
     protected final ShippingBinBlockEntity container;

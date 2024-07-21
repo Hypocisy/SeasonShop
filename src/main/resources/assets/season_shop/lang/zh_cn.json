@@ -1,0 +1,8 @@
+{
+  "block.season_shop.shipping_bin": "出货箱",
+  "block.season_shop.shop_block": "查价箱",
+  "itemGroup.season_shop.season_shop": "季节商店",
+  "season_shop.block.season_shop.shipping_bin.tips": "你最多可放置 %s 个该方块!",
+  "season_shop.block.season_shop.shipping_bin.tooltip_1": "单价: %s",
+  "season_shop.block.season_shop.shipping_bin.tooltip_2": "总价: %s"
+}

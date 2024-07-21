@@ -89,14 +89,12 @@ public class ServerEvents {
         if (event.getPlayer() instanceof ServerPlayer serverPlayer && serverPlayer.level() instanceof ServerLevel serverLevel &&
                 serverLevel.getBlockEntity(event.getPos()) instanceof ShippingBinBlockEntity shippingBe) {
             SeasonShop.getLogger().debug(shippingBe.getOwner().toString());
-            if (shippingBe.getOwner() != null) {
-                UUID playerUUID = shippingBe.getOwner();
-                PlacedBlockOwnerData data = PlacedBlockOwnerData.get(serverLevel);
-                int count = PlacedBlockOwnerData.getCount(playerUUID);
-                if (count > 0) {
-                    PlacedBlockOwnerData.setCount(playerUUID, count - 1);
-                    data.setDirty();
-                }
+            UUID playerUUID = shippingBe.getOwner();
+            PlacedBlockOwnerData data = PlacedBlockOwnerData.get(serverLevel);
+            int count = PlacedBlockOwnerData.getCount(playerUUID);
+            if (count > 0) {
+                PlacedBlockOwnerData.setCount(playerUUID, count - 1);
+                data.setDirty();
             }
         }
     }

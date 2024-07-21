@@ -4,9 +4,12 @@ import com.kumoe.SeasonShop.content.shipping.*;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.MenuEntry;
+import com.tterrag.registrate.util.entry.RegistryEntry;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import sereneseasons.core.SereneSeasons;
 
 public class SeasonShopBlocks {
 
@@ -18,14 +21,20 @@ public class SeasonShopBlocks {
     public static BlockEntry<ShippingBinBlock> SHIPPING_BIN_BLOCK;
     public static BlockEntry<ShopBlock> SHOP_BLOCK;
     public static BlockEntityEntry<ShippingBinBlockEntity> SHIPPING_BIN_BE;
+    public static RegistryEntry<CreativeModeTab> SEASON_SHOP_TAB;
 
     public static void register() {
+        registerCreativeModTab();
         registerBlock();
         SeasonShop.getLogger().debug("Registering Season blocks...");
         registerMenu();
         SeasonShop.getLogger().debug("Registering Season menus...");
         registerBlockEntity();
         SeasonShop.getLogger().debug("Registering Season block entities...");
+    }
+
+    private static void registerCreativeModTab() {
+        SEASON_SHOP_TAB = SeasonShop.REGISTRATE.object("season_shop").defaultCreativeTab(tab -> tab.withLabelColor(0xFF00AA32).withTabsAfter(SereneSeasons.CREATIVE_TAB_REGISTER.getRegistryName())).register();
     }
 
     private static void registerBlockEntity() {
@@ -40,9 +49,9 @@ public class SeasonShopBlocks {
 
     private static void registerBlock() {
         SHIPPING_BIN_BLOCK = SeasonShop.REGISTRATE.block("shipping_bin", ShippingBinBlock::new)
-                .properties((properties) -> BlockBehaviour.Properties.copy(Blocks.CHEST)).blockstate(ShippingBinBlock::buildModel).tag(BlockTags.MINEABLE_WITH_AXE).simpleItem().register();
+                .properties((properties) -> BlockBehaviour.Properties.copy(Blocks.CHEST)).blockstate(ShippingBinBlock::buildModel).tag(BlockTags.MINEABLE_WITH_AXE).item().tab(SEASON_SHOP_TAB.getKey(),(ctx, modifier) -> modifier.accept(ctx)).build().register();
         SHOP_BLOCK = SeasonShop.REGISTRATE.block("shop_block", ShopBlock::new)
-                .properties((properties) -> BlockBehaviour.Properties.copy(Blocks.CHEST)).blockstate(ShopBlock::buildModel).tag(BlockTags.MINEABLE_WITH_AXE).simpleItem().register();
+                .properties((properties) -> BlockBehaviour.Properties.copy(Blocks.CHEST)).blockstate(ShopBlock::buildModel).tag(BlockTags.MINEABLE_WITH_AXE).item().tab(SEASON_SHOP_TAB.getKey(),(ctx, modifier) -> modifier.accept(ctx)).build().register();
     }
 
 }

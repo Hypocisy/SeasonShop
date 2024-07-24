@@ -15,6 +15,7 @@ public enum SSLangData {
     SHIPPING_BIN_TIPS("block.season_shop.shipping_bin.tips", "You can only place up to %s of these blocks!", 1, ChatFormatting.RED),
     COMMAND_CLEAN_AVATAR_SUCCESS("command.season_shop.clean_avatar_cache.success", "你清除了SeasonShop的所有头像缓存!", 0, ChatFormatting.GRAY),
     COMMAND_CLEAN_AVATAR_FAILED("command.season_shop.clean_avatar_cache.failed", "已经没有更多的头像缓存可清除了!", 0, ChatFormatting.RED),
+    COMMAND_CLEAN_AVATAR_ONLY_PLAYER("command.season_shop.clean_avatar_cache.only_player", "只有玩家可以使用该命令!", 0, ChatFormatting.RED),
     ;
     private final String key, def;
     private final int arg;

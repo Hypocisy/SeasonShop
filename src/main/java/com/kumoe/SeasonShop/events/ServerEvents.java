@@ -4,21 +4,15 @@ import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
 import com.kumoe.SeasonShop.content.command.SeasonShopCommand;
 import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
-import com.kumoe.SeasonShop.content.screen.ShippingBinScreen;
-import com.kumoe.SeasonShop.content.screen.ShopScreen;
 import com.kumoe.SeasonShop.data.PlacedBlockOwnerData;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.init.SeasonShop;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -30,30 +24,6 @@ import static com.kumoe.SeasonShop.data.SSLangData.*;
 
 @Mod.EventBusSubscriber(modid = SeasonShop.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerEvents {
-
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public static void onScreenOpening(ScreenEvent.Opening event) {
-        if (SeasonShopConfig.enableDebug) {
-            if (event.getScreen() instanceof ShippingBinScreen) {
-                SeasonShop.logger().debug("Opening shippingBinScreen");
-            }
-            if (event.getScreen() instanceof ShopScreen) {
-                SeasonShop.logger().debug("Opening shippingShopScreen");
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onItemTooltip(ItemTooltipEvent event) {
-        if (event.getEntity() instanceof LocalPlayer localPlayer) {
-            if (localPlayer.level().isClientSide && localPlayer.containerMenu instanceof ShippingBinMenu) {
-                event.getToolTip().add(Component.translatable(SHIPPING_BIN_TOOLTIP_1.key(), ModUtils.getOneItemPrice(event.getItemStack())).withStyle(SHIPPING_BIN_TOOLTIP_1.format()));
-                event.getToolTip().add(Component.translatable(SHIPPING_BIN_TOOLTIP_2.key(), ModUtils.getTotalItemPrice(event.getItemStack())).withStyle(SHIPPING_BIN_TOOLTIP_2.format()));
-            }
-        }
-    }
-
     @SubscribeEvent
     public static void addReloadListener(AddReloadListenerEvent event) {
         event.addListener(SeasonShop.getPriceLoader());
@@ -101,10 +71,15 @@ public class ServerEvents {
     }
 
     @SubscribeEvent
-    public static void onPlayerJoin(EntityJoinLevelEvent event) {
-        // cache player image
-        if (event.getEntity() instanceof LocalPlayer localPlayer) {
-            ModUtils.cachePlayerAvatar(localPlayer.getUUID());
+    public static void onItemTooltip(ItemTooltipEvent event) {
+        Player player = event.getEntity();
+        if (player != null) {
+            if (player.level().isClientSide()) {
+                if (event.getEntity().containerMenu instanceof ShippingBinMenu) {
+                    event.getToolTip().add(Component.translatable(SHIPPING_BIN_TOOLTIP_1.key(), ModUtils.getOneItemPrice(event.getItemStack())).withStyle(SHIPPING_BIN_TOOLTIP_1.format()));
+                    event.getToolTip().add(Component.translatable(SHIPPING_BIN_TOOLTIP_2.key(), ModUtils.getTotalItemPrice(event.getItemStack())).withStyle(SHIPPING_BIN_TOOLTIP_2.format()));
+                }
+            }
         }
     }
 }

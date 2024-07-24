@@ -84,14 +84,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
             }
             // remove sold items
             pBlockEntity.items.clear();
-
-            if (pBlockEntity.getOwner() != null) {
-                try {
-                    NetworkHandler.sendToServer(PricesPacket.create(pBlockEntity.getOwner(), totalPrice, pPos));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            NetworkHandler.sendToServer(PricesPacket.create(pBlockEntity.getOwner(), totalPrice, pPos));
         }
     }
 
@@ -102,7 +95,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
 
     @Override
     public void startOpen(Player pPlayer) {
-        if (!this.remove && !pPlayer.isSpectator()) {
+        if (!this.remove && !pPlayer.isSpectator()&& this.getLevel()!=null) {
             this.openersCounter.incrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
 
@@ -110,7 +103,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
 
     @Override
     public void stopOpen(Player pPlayer) {
-        if (!this.remove && !pPlayer.isSpectator()) {
+        if (!this.remove && !pPlayer.isSpectator()&& this.getLevel()!=null) {
             this.openersCounter.decrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
     }

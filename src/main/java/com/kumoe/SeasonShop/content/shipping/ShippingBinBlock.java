@@ -1,6 +1,5 @@
 package com.kumoe.SeasonShop.content.shipping;
 
-import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
@@ -33,7 +32,6 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.network.NetworkHooks;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;

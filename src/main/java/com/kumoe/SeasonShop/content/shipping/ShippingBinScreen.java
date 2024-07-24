@@ -2,10 +2,11 @@ package com.kumoe.SeasonShop.content.shipping;
 
 
 import com.kumoe.SeasonShop.api.ModUtils;
+import com.kumoe.SeasonShop.data.config.Config;
+import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.init.SeasonShop;
 import com.kumoe.SeasonShop.network.NetworkHandler;
 import com.kumoe.SeasonShop.network.PricesPacket;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -40,17 +41,17 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
         super.init();
         ImageButton button = new ImageButton((this.width - this.imageWidth - 10) / 2 + 143, (this.height - this.imageHeight - 2) / 2 + 50, 16, 16, this.imageWidth, 0, 16, SHIPPING_BIN_GUI,
                 (pOnPress) -> {
-                    SeasonShop.getLogger().debug("Now sell items");
-                    var totalPrice = 0d;
-
+                    double totalPrice = 0d;
                     for (ItemStack itemStack : this.container.getItems()) {
-                        if (!itemStack.isEmpty()){
+                        if (!itemStack.isEmpty()) {
                             totalPrice += ModUtils.getTotalItemPrice(itemStack);
                         }
                     }
-                    this.container.clearContent();
+                    // send sell request
                     NetworkHandler.sendToServer(PricesPacket.create(this.container.getOwner(), totalPrice, this.container.getBlockPos()));
-                    this.container.setChanged();
+                    if (SeasonShopConfig.enableDebug){
+                        SeasonShop.getLogger().debug("total price: {}", totalPrice);
+                    }
                 });
         this.addRenderableWidget(button);
     }
@@ -82,7 +83,7 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
         ResourceLocation avatarLocation = ModUtils.loadPlayerAvatar(this.container.getOwner());
         if (avatarLocation != null) {
             // render player avatar
-            guiGraphics.blit(avatarLocation, x + 143, y + 27, 0, 0, 16, 16,16,16);
+            guiGraphics.blit(avatarLocation, x + 143, y + 27, 0, 0, 16, 16, 16, 16);
         }
     }
 }

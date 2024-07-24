@@ -97,7 +97,7 @@ public class ModUtils {
                 BufferedImage bufferedImage = ImageIO.read(inputStream);
                 ImageIO.write(bufferedImage, "png", avatarFile);
             } catch (IOException e) {
-                e.printStackTrace();
+                SeasonShop.getLogger().debug(e.toString());
             }
         }
     }

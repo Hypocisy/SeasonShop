@@ -43,6 +43,7 @@ public class PricesPacket {
             if (ctx.getDirection().getReceptionSide().isServer()) {
                 if (ctx.getSender().level().getBlockEntity(pos) instanceof ShippingBinBlockEntity bin) {
                     bin.getItems().clear();
+                    bin.setChanged();
                 }
             }
         });

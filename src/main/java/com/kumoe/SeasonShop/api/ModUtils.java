@@ -7,13 +7,11 @@ import com.kumoe.SeasonShop.init.SeasonShop;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import sereneseasons.handler.season.SeasonHandler;
@@ -27,17 +25,8 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Supplier;
-
-import static com.kumoe.SeasonShop.data.SSLangData.COMMAND_CLEAN_AVATAR_FAILED;
-import static com.kumoe.SeasonShop.data.SSLangData.COMMAND_CLEAN_AVATAR_SUCCESS;
 
 public class ModUtils {
 

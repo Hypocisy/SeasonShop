@@ -31,8 +31,6 @@ import java.util.UUID;
 public class ModUtils {
 
     public static final String AVATAR_CACHE_DIR = "avatarCache" + File.separator;
-    // todo 将箱子绑定到玩家，控制玩家可放置箱子的数量
-    // todo gui 显示玩家的头像
     protected static Map<ResourceLocation, PriceData> priceDataMap = SeasonShop.getPriceLoader().getLoader();
     // size - overlay - default
     protected static String api = "https://crafatar.com/avatars/";
@@ -99,6 +97,10 @@ public class ModUtils {
         };
     }
 
+    /**
+     * cache image to GameDir/avatarCache
+     * @param uuid file name
+     */
     public static void cachePlayerAvatar(UUID uuid) {
         File avatarFile = getAvatarFile(uuid);
         if (!avatarFile.getParentFile().exists()) {
@@ -116,6 +118,12 @@ public class ModUtils {
         }
     }
 
+    /**
+     * use DynamicTexture
+     * @param avatarFile the file object for loading native images.
+     * @param uuid native uuid of image name
+     * @return ResourceLocation that registered at client
+     */
     @Nullable
     @OnlyIn(Dist.CLIENT)
     public static ResourceLocation loadPlayerAvatar(File avatarFile, UUID uuid) {
@@ -136,10 +144,20 @@ public class ModUtils {
         return null;
     }
 
+    /**
+     * get avatar file object by uuid
+     * @param uuid local file uuid + .png
+     * @return The File object of avatar
+     */
     public static File getAvatarFile(UUID uuid) {
         return new File(FMLPaths.GAMEDIR.get() + File.separator + AVATAR_CACHE_DIR + uuid + ".png");
     }
 
+    /**
+     * get need register's avatar location
+     * @param uuid format is season_shop:textures/avatars/player_avatar_ + uuid
+     * @return player avatar location
+     */
     protected static ResourceLocation getAvatarLocation(UUID uuid) {
         return new ResourceLocation(SeasonShop.MODID, "textures/avatars/player_avatar_" + uuid);
     }

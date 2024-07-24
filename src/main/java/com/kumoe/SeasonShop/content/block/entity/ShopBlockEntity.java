@@ -53,7 +53,7 @@ public class ShopBlockEntity extends ChestBlockEntity {
 
     @Override
     public void startOpen(Player pPlayer) {
-        if (!this.remove && !pPlayer.isSpectator()) {
+        if (!this.remove && !pPlayer.isSpectator() && this.getLevel() != null) {
             this.openersCounter.incrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
 
@@ -61,7 +61,7 @@ public class ShopBlockEntity extends ChestBlockEntity {
 
     @Override
     public void stopOpen(Player pPlayer) {
-        if (!this.remove && !pPlayer.isSpectator()) {
+        if (!this.remove && !pPlayer.isSpectator() && this.getLevel() != null) {
             this.openersCounter.decrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
 

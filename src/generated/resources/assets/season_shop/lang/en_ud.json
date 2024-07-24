@@ -5,6 +5,8 @@
   "season_shop.block.season_shop.shipping_bin.tips": "¡sʞɔoןq ǝsǝɥʇ ɟo %s oʇ dn ǝɔɐןd ʎןuo uɐɔ noʎ",
   "season_shop.block.season_shop.shipping_bin.tooltip_1": "%s :价单",
   "season_shop.block.season_shop.shipping_bin.tooltip_2": "%s :价总",
+  "season_shop.block.season_shop.shipping_bin.tooltip_3": "！的空是子箱为因，品物卖售可不您",
   "season_shop.command.season_shop.clean_avatar_cache.failed": "¡了除清可存缓像头的多更有没经已",
+  "season_shop.command.season_shop.clean_avatar_cache.only_player": "¡令命该用使以可家玩有只",
   "season_shop.command.season_shop.clean_avatar_cache.success": "¡存缓像头有所的doɥSuosɐǝS了除清你"
 }

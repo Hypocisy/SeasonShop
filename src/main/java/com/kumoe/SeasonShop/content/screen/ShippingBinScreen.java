@@ -4,6 +4,7 @@ package com.kumoe.SeasonShop.content.screen;
 import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
 import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
+import com.kumoe.SeasonShop.data.SSLangData;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.init.SeasonShop;
 import com.kumoe.SeasonShop.network.NetworkHandler;
@@ -50,10 +51,14 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
                             totalPrice += ModUtils.getTotalItemPrice(itemStack);
                         }
                     }
-                    // send sell request
-                    NetworkHandler.sendToServer(PricesPacket.create(this.container.getOwner(), totalPrice, this.container.getBlockPos()));
-                    if (SeasonShopConfig.enableDebug) {
-                        SeasonShop.logger().debug("total price: {}", totalPrice);
+                    if (totalPrice != 0) {
+                        // send sell request
+                        NetworkHandler.sendToServer(PricesPacket.create(this.container.getOwner(), totalPrice, this.container.getBlockPos()));
+                        if (SeasonShopConfig.enableDebug) {
+                            SeasonShop.logger().debug("total price: {}", totalPrice);
+                        }
+                    } else {
+                        this.player.sendSystemMessage(ModUtils.getLangComponent(SSLangData.SHIPPING_BIN_TOOLTIP_3));
                     }
                     this.player.closeContainer();
                 });

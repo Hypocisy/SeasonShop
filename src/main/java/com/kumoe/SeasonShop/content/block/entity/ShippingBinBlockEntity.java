@@ -76,7 +76,6 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
         pBlockEntity.getChestLidController().tickLid();
 //        SeasonShop.getLogger().debug("Current game time: {}", pLevel.getGameTime());
         if (pLevel.getServer() != null && pLevel.getServer().getTickCount() % 18000 == 0) {
-            // todo: send a packet to sell item
             // todo: render how much player sold
             SeasonShop.logger().debug("Now sell items");
             var totalPrice = 0d;
@@ -96,7 +95,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
 
     @Override
     public void startOpen(Player pPlayer) {
-        if (!this.remove && !pPlayer.isSpectator()&& this.getLevel()!=null) {
+        if (!this.remove && !pPlayer.isSpectator() && this.getLevel() != null) {
             this.openersCounter.incrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
 
@@ -104,7 +103,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
 
     @Override
     public void stopOpen(Player pPlayer) {
-        if (!this.remove && !pPlayer.isSpectator()&& this.getLevel()!=null) {
+        if (!this.remove && !pPlayer.isSpectator() && this.getLevel() != null) {
             this.openersCounter.decrementOpeners(pPlayer, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
     }

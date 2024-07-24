@@ -1,9 +1,10 @@
 package com.kumoe.SeasonShop.network;
 
+import com.kumoe.SeasonShop.api.ModUtils;
+import com.kumoe.SeasonShop.data.SSLangData;
 import com.kumoe.SeasonShop.init.SeasonShop;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -15,9 +16,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.function.Supplier;
 
-import static com.kumoe.SeasonShop.api.ModUtils.AVATAR_CACHE_DIR;
-import static com.kumoe.SeasonShop.data.SSLangData.COMMAND_CLEAN_AVATAR_FAILED;
-import static com.kumoe.SeasonShop.data.SSLangData.COMMAND_CLEAN_AVATAR_SUCCESS;
 
 public class S2CClearAvatarPacket {
 
@@ -30,7 +28,7 @@ public class S2CClearAvatarPacket {
 
 
     public void clearPlayerAvatarCache() {
-        Path path = FMLPaths.GAMEDIR.get().resolve(AVATAR_CACHE_DIR);
+        Path path = FMLPaths.GAMEDIR.get().resolve(ModUtils.AVATAR_CACHE_DIR);
         if (Minecraft.getInstance().player != null) {
             try {
                 if (Files.exists(path)) {
@@ -48,9 +46,9 @@ public class S2CClearAvatarPacket {
                             return FileVisitResult.CONTINUE;
                         }
                     });
-                    Minecraft.getInstance().player.displayClientMessage(Component.translatable(COMMAND_CLEAN_AVATAR_SUCCESS.key()).withStyle(COMMAND_CLEAN_AVATAR_SUCCESS.format()), false);
+                    Minecraft.getInstance().player.displayClientMessage(ModUtils.getLangComponent(SSLangData.COMMAND_CLEAN_AVATAR_SUCCESS), false);
                 } else {
-                    Minecraft.getInstance().player.displayClientMessage(Component.translatable(COMMAND_CLEAN_AVATAR_FAILED.key()).withStyle(COMMAND_CLEAN_AVATAR_FAILED.format()), false);
+                    Minecraft.getInstance().player.displayClientMessage(ModUtils.getLangComponent(SSLangData.COMMAND_CLEAN_AVATAR_FAILED), false);
                 }
             } catch (IOException e) {
                 SeasonShop.logger().debug(e.toString());

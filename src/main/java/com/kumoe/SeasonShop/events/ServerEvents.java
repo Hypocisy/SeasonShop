@@ -7,7 +7,6 @@ import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
 import com.kumoe.SeasonShop.data.PlacedBlockOwnerData;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.init.SeasonShop;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -44,7 +43,7 @@ public class ServerEvents {
                 data.setDirty();
             } else {
                 event.setCanceled(true);
-                serverPlayer.displayClientMessage(Component.translatable(SHIPPING_BIN_TIPS.key(), SeasonShopConfig.maxBindBlock).withStyle(SHIPPING_BIN_TIPS.format()), false);
+                serverPlayer.displayClientMessage(ModUtils.getLangComponent(SHIPPING_BIN_TIPS, SeasonShopConfig.maxBindBlock), false);
             }
         }
     }
@@ -76,8 +75,8 @@ public class ServerEvents {
         if (player != null) {
             if (player.level().isClientSide()) {
                 if (event.getEntity().containerMenu instanceof ShippingBinMenu) {
-                    event.getToolTip().add(Component.translatable(SHIPPING_BIN_TOOLTIP_1.key(), ModUtils.getOneItemPrice(event.getItemStack())).withStyle(SHIPPING_BIN_TOOLTIP_1.format()));
-                    event.getToolTip().add(Component.translatable(SHIPPING_BIN_TOOLTIP_2.key(), ModUtils.getTotalItemPrice(event.getItemStack())).withStyle(SHIPPING_BIN_TOOLTIP_2.format()));
+                    event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_1, ModUtils.getOneItemPrice(event.getItemStack())));
+                    event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_2, ModUtils.getTotalItemPrice(event.getItemStack())));
                 }
             }
         }

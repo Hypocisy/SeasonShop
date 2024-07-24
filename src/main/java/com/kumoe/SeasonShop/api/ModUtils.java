@@ -1,5 +1,6 @@
 package com.kumoe.SeasonShop.api;
 
+import com.kumoe.SeasonShop.data.SSLangData;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.data.datapack.Price;
 import com.kumoe.SeasonShop.data.datapack.PriceData;
@@ -7,6 +8,8 @@ import com.kumoe.SeasonShop.init.SeasonShop;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -99,6 +102,7 @@ public class ModUtils {
 
     /**
      * cache image to GameDir/avatarCache
+     *
      * @param uuid file name
      */
     public static void cachePlayerAvatar(UUID uuid) {
@@ -120,8 +124,9 @@ public class ModUtils {
 
     /**
      * use DynamicTexture
+     *
      * @param avatarFile the file object for loading native images.
-     * @param uuid native uuid of image name
+     * @param uuid       native uuid of image name
      * @return ResourceLocation that registered at client
      */
     @Nullable
@@ -146,6 +151,7 @@ public class ModUtils {
 
     /**
      * get avatar file object by uuid
+     *
      * @param uuid local file uuid + .png
      * @return The File object of avatar
      */
@@ -155,10 +161,15 @@ public class ModUtils {
 
     /**
      * get need register's avatar location
+     *
      * @param uuid format is season_shop:textures/avatars/player_avatar_ + uuid
      * @return player avatar location
      */
     protected static ResourceLocation getAvatarLocation(UUID uuid) {
         return new ResourceLocation(SeasonShop.MODID, "textures/avatars/player_avatar_" + uuid);
+    }
+
+    public static MutableComponent getLangComponent(SSLangData langData, Object... pArgs) {
+        return Component.translatable(langData.key(), pArgs).withStyle(langData.format());
     }
 }

@@ -95,7 +95,7 @@ public class ServerEvents {
 
     @SubscribeEvent
     public static void onPlayerJoin(EntityJoinLevelEvent event) {
-        // todo cache player image
+        // cache player image
         if (event.getEntity() instanceof LocalPlayer localPlayer) {
             ModUtils.cachePlayerAvatar(localPlayer.getUUID());
         }

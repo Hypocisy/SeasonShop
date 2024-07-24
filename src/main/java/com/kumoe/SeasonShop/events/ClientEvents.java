@@ -5,6 +5,7 @@ import com.kumoe.SeasonShop.content.screen.ShippingBinScreen;
 import com.kumoe.SeasonShop.content.screen.ShopScreen;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.init.SeasonShop;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -17,8 +18,8 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onPlayerJoin(EntityJoinLevelEvent event) {
         // cache player image
-        if (event.getEntity().level().isClientSide()) {
-            new Thread(() -> ModUtils.cachePlayerAvatar(event.getEntity().getUUID())).start();
+        if (event.getEntity() instanceof Player player) {
+            new Thread(() -> ModUtils.cachePlayerAvatar(player.getUUID())).start();
         }
     }
 

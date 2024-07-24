@@ -31,8 +31,15 @@ public class NetworkHandler {
                 .decoder(S2CPriceSyncPacket::decode)
                 .encoder(S2CPriceSyncPacket::encode)
                 .consumerNetworkThread(S2CPriceSyncPacket::handle).add();
+        net.messageBuilder(S2CClearAvatarPacket.class, getId(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(S2CClearAvatarPacket::decode)
+                .encoder(S2CClearAvatarPacket::encode)
+                .consumerNetworkThread(S2CClearAvatarPacket::handle).add();
     }
 
+    public static SimpleChannel getInstance() {
+        return INSTANCE;
+    }
 
     public static void sendToServer(PricesPacket pricesPacket) {
         INSTANCE.sendToServer(pricesPacket);

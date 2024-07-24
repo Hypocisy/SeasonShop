@@ -73,7 +73,7 @@ public final class SeasonShop {
 
     public void onDatapackSync(OnDatapackSyncEvent event) {
         var packet = new S2CPriceSyncPacket(SeasonShop.getPriceLoader().getLoader());
-        if (event.getPlayer() !=null) {
+        if (event.getPlayer() != null) {
             NetworkHandler.sendToPlayer(PacketDistributor.PLAYER.with(event::getPlayer), packet);
         }
     }

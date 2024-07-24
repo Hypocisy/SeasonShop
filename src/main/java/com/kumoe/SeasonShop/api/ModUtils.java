@@ -5,16 +5,15 @@ import com.kumoe.SeasonShop.data.datapack.Price;
 import com.kumoe.SeasonShop.data.datapack.PriceData;
 import com.kumoe.SeasonShop.init.SeasonShop;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import sereneseasons.handler.season.SeasonHandler;
@@ -35,12 +34,14 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 
-import static com.kumoe.SeasonShop.data.SSLangData.*;
+import static com.kumoe.SeasonShop.data.SSLangData.COMMAND_CLEAN_AVATAR_FAILED;
+import static com.kumoe.SeasonShop.data.SSLangData.COMMAND_CLEAN_AVATAR_SUCCESS;
 
 public class ModUtils {
 
-    private static final String AVATAR_CACHE_DIR = "avatarCache" + File.separator;
+    public static final String AVATAR_CACHE_DIR = "avatarCache" + File.separator;
     // todo 将箱子绑定到玩家，控制玩家可放置箱子的数量
     // todo gui 显示玩家的头像
     protected static Map<ResourceLocation, PriceData> priceDataMap = SeasonShop.getPriceLoader().getLoader();
@@ -144,39 +145,6 @@ public class ModUtils {
             SeasonShop.logger().debug("downloading {} to {}", uuid, avatarFile.getPath());
         }
         return null;
-    }
-
-    public static int clearPlayerAvatarCache(CommandContext<CommandSourceStack> context) {
-        if (context.getSource().isPlayer()){
-            Path path = FMLPaths.GAMEDIR.get().resolve(AVATAR_CACHE_DIR);
-            try {
-                if (Files.exists(path)) {
-                    // Use walkFileTree to delete the directory and its contents recursively
-                    Files.walkFileTree(path, new SimpleFileVisitor<>() {
-                        @Override
-                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                            Files.delete(file);
-                            return FileVisitResult.CONTINUE;
-                        }
-
-                        @Override
-                        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                            Files.delete(dir);
-                            return FileVisitResult.CONTINUE;
-                        }
-                    });
-                    context.getSource().sendSystemMessage(Component.translatable(COMMAND_CLEAN_AVATAR_SUCCESS.key()).withStyle(COMMAND_CLEAN_AVATAR_SUCCESS.format()));
-                    return 1;
-                } else {
-                    context.getSource().sendSystemMessage(Component.translatable(COMMAND_CLEAN_AVATAR_FAILED.key()).withStyle(COMMAND_CLEAN_AVATAR_FAILED.format()));
-                }
-            } catch (IOException e) {
-                SeasonShop.logger().debug(e.toString());
-            }
-        }else {
-            context.getSource().sendSystemMessage(Component.translatable(COMMAND_CLEAN_AVATAR_ONLY_PLAYER.key()).withStyle(COMMAND_CLEAN_AVATAR_ONLY_PLAYER.format()));
-        }
-        return 0;
     }
 
     public static File getAvatarFile(UUID uuid) {

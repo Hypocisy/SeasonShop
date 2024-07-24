@@ -1,7 +1,6 @@
 package com.kumoe.SeasonShop.content.menu;
 
 import com.kumoe.SeasonShop.api.ModUtils;
-import com.kumoe.SeasonShop.api.SeasonSlot;
 import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -41,7 +40,7 @@ public class ShippingBinMenu extends AbstractContainerMenu {
         if (tileAtPos instanceof ShippingBinBlockEntity bin) {
             bin.setOwner(data.readUUID());
             // cache player avatar to a local client
-            ModUtils.cachePlayerAvatar(bin.getOwner());
+            new Thread(() -> ModUtils.cachePlayerAvatar(bin.getOwner())).start();
             return bin;
         } else {
             throw new IllegalStateException("Tile entity is not correct! " + tileAtPos);
@@ -58,7 +57,7 @@ public class ShippingBinMenu extends AbstractContainerMenu {
         int slot;
         for (row = 0; row < this.containerRows; ++row) {
             for (slot = 0; slot < 6; ++slot) {
-                this.addSlot(new SeasonSlot(this.container, slot + row * 6, 8 + slot * 18, 18 + row * 18));
+                this.addSlot(new Slot(this.container, slot + row * 6, 8 + slot * 18, 18 + row * 18));
             }
         }
 

@@ -2,6 +2,7 @@ package com.kumoe.SeasonShop.events;
 
 import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
+import com.kumoe.SeasonShop.content.command.SeasonShopCommand;
 import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
 import com.kumoe.SeasonShop.content.screen.ShippingBinScreen;
 import com.kumoe.SeasonShop.content.screen.ShopScreen;
@@ -16,6 +17,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.level.BlockEvent;
@@ -75,6 +77,11 @@ public class ServerEvents {
                 serverPlayer.displayClientMessage(Component.translatable(SHIPPING_BIN_TIPS.key(), SeasonShopConfig.maxBindBlock).withStyle(SHIPPING_BIN_TIPS.format()), false);
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onCommandRegister(final RegisterCommandsEvent event) {
+        SeasonShopCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

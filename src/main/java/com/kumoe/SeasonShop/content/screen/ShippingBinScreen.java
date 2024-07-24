@@ -19,6 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.io.File;
+
 @OnlyIn(Dist.CLIENT)
 public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> {
     final ResourceLocation SHIPPING_BIN_GUI = new ResourceLocation(SeasonShop.MODID, "textures/gui/shipping_bin.png");
@@ -82,10 +84,13 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
         int x = (this.width - this.imageWidth - 10) / 2;
         int y = (this.height - this.imageHeight - 2) / 2;
         guiGraphics.blit(SHIPPING_BIN_GUI, x, y, 0, 0, this.imageWidth, this.imageHeight);
-        ResourceLocation avatarLocation = ModUtils.loadPlayerAvatar(this.container.getOwner());
-        if (avatarLocation != null) {
+        File avatarFile = ModUtils.getAvatarFile(this.container.getOwner());
+        if (avatarFile.exists()) {
             // render player avatar
-            guiGraphics.blit(avatarLocation, x + 143, y + 27, 0, 0, 16, 16, 16, 16);
+            ResourceLocation avatarLocation = ModUtils.loadPlayerAvatar(avatarFile, this.container.getOwner());
+            if (avatarLocation != null) {
+                guiGraphics.blit(avatarLocation, x + 143, y + 27, 0, 0, 16, 16, 16, 16);
+            }
         }
     }
 }

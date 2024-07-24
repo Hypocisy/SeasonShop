@@ -1,4 +1,4 @@
-package com.kumoe.SeasonShop.content.block.beRenderer;
+package com.kumoe.SeasonShop.content.block.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

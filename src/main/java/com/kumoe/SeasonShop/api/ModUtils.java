@@ -5,8 +5,11 @@ import com.kumoe.SeasonShop.data.datapack.Price;
 import com.kumoe.SeasonShop.data.datapack.PriceData;
 import com.kumoe.SeasonShop.init.SeasonShop;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -22,8 +25,16 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.kumoe.SeasonShop.data.SSLangData.COMMAND_CLEAN_AVATAR_FAILED;
+import static com.kumoe.SeasonShop.data.SSLangData.COMMAND_CLEAN_AVATAR_SUCCESS;
 
 public class ModUtils {
 
@@ -105,22 +116,59 @@ public class ModUtils {
         }
     }
 
-    public static ResourceLocation loadPlayerAvatar(UUID uuid) {
-        File avatarFile = getAvatarFile(uuid);
-        ResourceLocation avatarLocation = new ResourceLocation(SeasonShop.MODID, "textures/avatars/player_avatar_" + uuid);
-        try (NativeImage nativeImage = NativeImage.read(new FileInputStream(avatarFile))) {
-            Minecraft.getInstance().execute(() -> {
-                DynamicTexture dynamicTexture = new DynamicTexture(nativeImage);
-                Minecraft.getInstance().getTextureManager().register(avatarLocation, dynamicTexture);
-            });
-        } catch (IOException e) {
-            SeasonShop.logger().debug(e.toString());
-            return null;
+    public static ResourceLocation loadPlayerAvatar(File avatarFile,UUID uuid) {
+        if (avatarFile.exists()) {
+            ResourceLocation avatarLocation = getAvatarLocation(uuid);
+            try (NativeImage nativeImage = NativeImage.read(new FileInputStream(avatarFile))) {
+                Minecraft.getInstance().execute(() -> {
+                    DynamicTexture dynamicTexture = new DynamicTexture(nativeImage);
+                    Minecraft.getInstance().getTextureManager().register(avatarLocation, dynamicTexture);
+                });
+                return avatarLocation;
+            } catch (IOException e) {
+                SeasonShop.logger().debug(e.toString());
+            }
+        } else {
+            SeasonShop.logger().debug("downloading {} to {}", uuid, avatarFile.getPath());
         }
-        return avatarLocation;
+        return null;
     }
 
-    protected static File getAvatarFile(UUID uuid) {
+    public static int clearPlayerAvatarCache(CommandContext<CommandSourceStack> context) {
+        Path path = FMLPaths.GAMEDIR.get().resolve(AVATAR_CACHE_DIR);
+
+        try {
+            if (Files.exists(path)) {
+                // Use walkFileTree to delete the directory and its contents recursively
+                Files.walkFileTree(path, new SimpleFileVisitor<>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        Files.delete(file);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                        Files.delete(dir);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+                context.getSource().sendSystemMessage(Component.translatable(COMMAND_CLEAN_AVATAR_SUCCESS.key()).withStyle(COMMAND_CLEAN_AVATAR_SUCCESS.format()));
+                return 1;
+            } else {
+                context.getSource().sendSystemMessage(Component.translatable(COMMAND_CLEAN_AVATAR_FAILED.key()).withStyle(COMMAND_CLEAN_AVATAR_FAILED.format()));
+            }
+        } catch (IOException e) {
+            SeasonShop.logger().debug(e.toString());
+        }
+        return 0;
+    }
+
+    public static File getAvatarFile(UUID uuid) {
         return new File(FMLPaths.GAMEDIR.get() + File.separator + AVATAR_CACHE_DIR + uuid + ".png");
+    }
+
+    protected static ResourceLocation getAvatarLocation(UUID uuid) {
+        return new ResourceLocation(SeasonShop.MODID, "textures/avatars/player_avatar_" + uuid);
     }
 }

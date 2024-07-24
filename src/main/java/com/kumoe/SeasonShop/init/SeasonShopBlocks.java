@@ -1,7 +1,7 @@
 package com.kumoe.SeasonShop.init;
 
-import com.kumoe.SeasonShop.content.block.beRenderer.ShippingBinRenderer;
-import com.kumoe.SeasonShop.content.block.beRenderer.ShopBlockRenderer;
+import com.kumoe.SeasonShop.content.block.renderer.ShippingBinRenderer;
+import com.kumoe.SeasonShop.content.block.renderer.ShopBlockRenderer;
 import com.kumoe.SeasonShop.content.block.ShippingBinBlock;
 import com.kumoe.SeasonShop.content.block.ShopBlock;
 import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;

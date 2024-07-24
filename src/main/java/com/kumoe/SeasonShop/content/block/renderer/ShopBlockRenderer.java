@@ -1,4 +1,4 @@
-package com.kumoe.SeasonShop.content.block.beRenderer;
+package com.kumoe.SeasonShop.content.block.renderer;
 
 import com.kumoe.SeasonShop.content.block.ShopBlock;
 import com.kumoe.SeasonShop.content.block.entity.ShopBlockEntity;

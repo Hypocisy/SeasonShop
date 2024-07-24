@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 import sereneseasons.handler.season.SeasonHandler;
 
 import javax.imageio.ImageIO;
@@ -52,18 +53,25 @@ public class ModUtils {
      */
     public static double getTotalItemPrice(ItemStack stack) {
         // 如果设置价格则使用基础价格与季节价格和相乘，如果没有返回默认价格。
-        if (getItemPriceObject(stack) == null)
-            return getOneItemPrice(stack) * stack.getCount();
-        return BigDecimal.valueOf(stack.getCount() * getCurrentSeasonPrice(getItemPriceObject(stack))).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        Price price = getItemPriceObject(stack);
+        double oneItemPrice = getOneItemPrice(stack);
+        if (price == null)
+            return oneItemPrice * stack.getCount();
+        return BigDecimal.valueOf(stack.getCount() * getCurrentSeasonPrice(price)).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
     public static double getOneItemPrice(ItemStack stack) {
         // 如果设置价格则使用基础价格与季节价格相乘，如果没有返回默认价格。
-        return getItemPriceObject(stack) == null ? SeasonShopConfig.defaultPrice : getCurrentSeasonPrice(getItemPriceObject(stack));
+        Price price = getItemPriceObject(stack);
+        if (price != null) {
+            return getCurrentSeasonPrice(price);
+        }
+        return SeasonShopConfig.defaultPrice;
     }
 
+    @Nullable
     public static Price getItemPriceObject(ItemStack stack) {
-        var priceData = priceDataMap.get(new ResourceLocation("season_shop", "prices/price_setting.json"));
+        PriceData priceData = priceDataMap.get(new ResourceLocation("season_shop", "prices/price_setting.json"));
 
         if (priceData != null) {
             return priceData.prices().get(stackToResourceLocation(stack));
@@ -71,6 +79,7 @@ public class ModUtils {
         return null;
     }
 
+    @Nullable
     public static ResourceLocation stackToResourceLocation(ItemStack stack) {
         return ForgeRegistries.ITEMS.getKey(stack.getItem());
     }
@@ -116,7 +125,8 @@ public class ModUtils {
         }
     }
 
-    public static ResourceLocation loadPlayerAvatar(File avatarFile,UUID uuid) {
+    @Nullable
+    public static ResourceLocation loadPlayerAvatar(File avatarFile, UUID uuid) {
         if (avatarFile.exists()) {
             ResourceLocation avatarLocation = getAvatarLocation(uuid);
             try (NativeImage nativeImage = NativeImage.read(new FileInputStream(avatarFile))) {

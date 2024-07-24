@@ -1,7 +1,6 @@
 package com.kumoe.SeasonShop.data.config;
 
 import com.kumoe.SeasonShop.init.SeasonShop;
-import net.minecraftforge.fml.config.ModConfig;
 
 public final class SeasonShopConfig {
 
@@ -11,7 +10,7 @@ public final class SeasonShopConfig {
 
     public static Config config = SeasonShop.getInstance().getConfig();
 
-    public static void bake(ModConfig config) {
+    public static void bake() {
         // general settings
         initGeneralSettings();
     }
@@ -22,7 +21,7 @@ public final class SeasonShopConfig {
             maxBindBlock = config.maxBindBlock.get();
             defaultPrice = config.defaultPrice.get();
         } catch (Exception var) {
-            SeasonShop.getLogger().trace("An exception was caused trying to load the config for GeneralSettings.\n%s".formatted(var));
+            SeasonShop.logger().trace("An exception was caused trying to load the config for GeneralSettings.\n%s".formatted(var));
         }
     }
 

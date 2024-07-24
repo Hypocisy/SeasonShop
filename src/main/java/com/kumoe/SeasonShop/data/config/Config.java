@@ -12,7 +12,7 @@ public class Config {
         {
             enableDebug = builder.comment("Show debug info to player?").define("enableDebug", true);
             maxBindBlock = builder.comment("Set max bind blocks for player").defineInRange("maxBindBlock", 2,0,1000);
-            defaultPrice = builder.comment("Set max bind blocks for player").defineInRange("maxBindBlock", 1f,0f,Double.MAX_VALUE);
+            defaultPrice = builder.comment("Set max bind blocks for player").defineInRange("defaultPrice", 1f,0f,Double.MAX_VALUE);
         }
         builder.pop();
     }

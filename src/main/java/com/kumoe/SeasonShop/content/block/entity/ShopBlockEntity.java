@@ -3,29 +3,27 @@ package com.kumoe.SeasonShop.content.block.entity;
 import com.kumoe.SeasonShop.content.menu.ShopMenu;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.entity.*;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.entity.ChestLidController;
+import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.ChestType;
 import org.jetbrains.annotations.Nullable;
 
 public class ShopBlockEntity extends ChestBlockEntity {
     private final ChestLidController chestLidController;
     private final ContainerOpenersCounter openersCounter = new ContainerOpenersCounter() {
         protected void onOpen(Level level, BlockPos blockPos, BlockState state) {
-            ShopBlockEntity.playSound(level, blockPos, state, SoundEvents.CHEST_OPEN);
+            ShippingBinBlockEntity.playSound(level, blockPos, state, SoundEvents.CHEST_OPEN);
         }
 
         protected void onClose(Level level, BlockPos blockPos, BlockState state) {
-            ShopBlockEntity.playSound(level, blockPos, state, SoundEvents.CHEST_CLOSE);
+            ShippingBinBlockEntity.playSound(level, blockPos, state, SoundEvents.CHEST_CLOSE);
         }
 
         protected void openerCountChanged(Level level, BlockPos blockPos, BlockState state, int pEventId, int pEventParam) {
@@ -43,20 +41,7 @@ public class ShopBlockEntity extends ChestBlockEntity {
         this.chestLidController = new ChestLidController();
     }
 
-    static void playSound(Level pLevel, BlockPos pPos, BlockState pState, SoundEvent pSound) {
-        ChestType chesttype = pState.getValue(ChestBlock.TYPE);
-        double d0 = (double) pPos.getX() + 0.5;
-        double d1 = (double) pPos.getY() + 0.5;
-        double d2 = (double) pPos.getZ() + 0.5;
-        if (chesttype == ChestType.RIGHT) {
-            Direction direction = ChestBlock.getConnectedDirection(pState);
-            d0 += (double) direction.getStepX() * 0.5;
-            d2 += (double) direction.getStepZ() * 0.5;
-        }
-        pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
-    }
-
-    protected static void lidAnimateTick(Level pLevel, BlockPos pPos, BlockState pState, ShopBlockEntity pBlockEntity) {
+    public static void lidAnimateTick(Level pLevel, BlockPos pPos, BlockState pState, ShopBlockEntity pBlockEntity) {
         pBlockEntity.getChestLidController().tickLid();
     }
 

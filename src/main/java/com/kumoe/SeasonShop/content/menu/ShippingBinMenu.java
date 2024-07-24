@@ -1,8 +1,8 @@
 package com.kumoe.SeasonShop.content.menu;
 
 import com.kumoe.SeasonShop.api.ModUtils;
-import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
 import com.kumoe.SeasonShop.api.SeasonSlot;
+import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +11,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -79,6 +80,7 @@ public class ShippingBinMenu extends AbstractContainerMenu {
      * @return {@link net.minecraft.world.item.ItemStack}如果拒绝移动，否则返回快速移动的物品
      */
     @Override
+    @NotNull
     public ItemStack quickMoveStack(Player player, int pIndex) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(pIndex);
@@ -121,5 +123,9 @@ public class ShippingBinMenu extends AbstractContainerMenu {
     @Override
     public boolean clickMenuButton(Player pPlayer, int pId) {
         return super.clickMenuButton(pPlayer, pId);
+    }
+
+    public ShippingBinBlockEntity getContainer() {
+        return container;
     }
 }

@@ -35,11 +35,11 @@ public class SeasonShopBlocks {
     public static void register() {
         registerCreativeModTab();
         registerBlock();
-        SeasonShop.getLogger().debug("Registering Season blocks...");
+        SeasonShop.logger().debug("Registering Season blocks...");
         registerMenu();
-        SeasonShop.getLogger().debug("Registering Season menus...");
+        SeasonShop.logger().debug("Registering Season menus...");
         registerBlockEntity();
-        SeasonShop.getLogger().debug("Registering Season block entities...");
+        SeasonShop.logger().debug("Registering Season block entities...");
     }
 
     private static void registerCreativeModTab() {

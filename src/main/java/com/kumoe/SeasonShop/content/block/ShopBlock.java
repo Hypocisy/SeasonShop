@@ -31,6 +31,7 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -143,7 +144,7 @@ public class ShopBlock extends ChestBlock {
 
     }
 
-    public DoubleBlockCombiner.NeighborCombineResult<? extends ShopBlockEntity> combine(BlockState pState, Level pLevel, BlockPos pPos, boolean pOverride) {
+    public DoubleBlockCombiner.@NotNull NeighborCombineResult<ShopBlockEntity> combine(BlockState pState, Level pLevel, BlockPos pPos, boolean pOverride) {
         BiPredicate<LevelAccessor, BlockPos> bipredicate = pOverride ? ((levelAccessor, blockPos) -> false) : ShopBlock::isChestBlockedAt;
         return DoubleBlockCombiner.combineWithNeigbour(SeasonShopBlocks.SHOP_BE.get(), ShopBlock::getBlockType, ShopBlock::getConnectedDirection, FACING, pState, pLevel, pPos, bipredicate);
     }

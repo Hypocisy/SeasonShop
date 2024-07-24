@@ -59,7 +59,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
         this.chestLidController = new ChestLidController();
     }
 
-    static void playSound(Level pLevel, BlockPos pPos, BlockState pState, SoundEvent pSound) {
+    public static void playSound(Level pLevel, BlockPos pPos, BlockState pState, SoundEvent pSound) {
         ChestType chesttype = pState.getValue(ChestBlock.TYPE);
         double d0 = (double) pPos.getX() + 0.5;
         double d1 = (double) pPos.getY() + 0.5;
@@ -72,13 +72,13 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
         pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
     }
 
-    protected static void lidAnimateTick(Level pLevel, BlockPos pPos, BlockState pState, ShippingBinBlockEntity pBlockEntity) {
+    public static void lidAnimateTick(Level pLevel, BlockPos pPos, BlockState pState, ShippingBinBlockEntity pBlockEntity) {
         pBlockEntity.getChestLidController().tickLid();
 //        SeasonShop.getLogger().debug("Current game time: {}", pLevel.getGameTime());
         if (pLevel.getServer() != null && pLevel.getServer().getTickCount() % 18000 == 0) {
             // todo: send a packet to sell item
             // todo: render how much player sold
-            SeasonShop.getLogger().debug("Now sell items");
+            SeasonShop.logger().debug("Now sell items");
             var totalPrice = 0d;
             for (ItemStack itemStack : pBlockEntity.items) {
                 totalPrice += ModUtils.getTotalItemPrice(itemStack);

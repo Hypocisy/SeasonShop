@@ -34,10 +34,10 @@ public class ServerEvents {
     public static void onScreenOpening(ScreenEvent.Opening event) {
         if (SeasonShopConfig.enableDebug) {
             if (event.getScreen() instanceof ShippingBinScreen) {
-                SeasonShop.getLogger().debug("Opening shippingBinScreen");
+                SeasonShop.logger().debug("Opening shippingBinScreen");
             }
             if (event.getScreen() instanceof ShopScreen) {
-                SeasonShop.getLogger().debug("Opening shippingShopScreen");
+                SeasonShop.logger().debug("Opening shippingShopScreen");
             }
         }
     }
@@ -83,7 +83,7 @@ public class ServerEvents {
                 serverLevel.getBlockEntity(event.getPos()) instanceof ShippingBinBlockEntity shippingBe) {
             // get shipping block entity's owner id
             UUID playerUUID = shippingBe.getOwner();
-            SeasonShop.getLogger().debug(playerUUID.toString());
+            SeasonShop.logger().debug(playerUUID.toString());
             PlacedBlockOwnerData data = PlacedBlockOwnerData.get(serverLevel);
             int count = data.getCount(playerUUID);
             if (count > 0) {

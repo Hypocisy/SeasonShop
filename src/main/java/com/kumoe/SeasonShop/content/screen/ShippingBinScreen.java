@@ -34,7 +34,7 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
         this.playerInventory = pPlayerInventory;
         this.player = pPlayerInventory.player;
         this.menu = pMenu;
-        this.container = pMenu.container;
+        this.container = pMenu.getContainer();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
                     // send sell request
                     NetworkHandler.sendToServer(PricesPacket.create(this.container.getOwner(), totalPrice, this.container.getBlockPos()));
                     if (SeasonShopConfig.enableDebug) {
-                        SeasonShop.getLogger().debug("total price: {}", totalPrice);
+                        SeasonShop.logger().debug("total price: {}", totalPrice);
                     }
                     this.player.closeContainer();
                 });

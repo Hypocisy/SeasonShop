@@ -42,11 +42,14 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     protected void renderBg(GuiGraphics guiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
         int x = (this.width - this.imageWidth - 10) / 2;
         int y = (this.height - this.imageHeight - 2) / 2 - 20;
+        // render a sell shop background
         guiGraphics.blit(SELL_SHOP_LOCATION, x, y, 0, 0, 189, 104);
+        // render an icon base on now's season
         guiGraphics.blit(SELL_SHOP_LOCATION, x + 87, y + 77, this.imageWidth, ModUtils.getSeasonIconVOffset(), 13, 13);
     }
 
     @Override
+    @NotNull
     public ShopMenu getMenu() {
         return this.menu;
     }

@@ -10,8 +10,6 @@ import com.kumoe.SeasonShop.network.S2CPriceSyncPacket;
 import com.mojang.logging.LogUtils;
 import com.tterrag.registrate.Registrate;
 import com.tterrag.registrate.providers.ProviderType;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.OnDatapackSyncEvent;
@@ -41,13 +39,13 @@ public final class SeasonShop {
     public SeasonShop() {
         instance = this;
         SeasonShopBlocks.register();
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, configured.getRight());
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, configured.getRight());
         REGISTRATE.addDataGenerator(ProviderType.LANG, SSLangData::genLang);
         MinecraftForge.EVENT_BUS.addListener(this::onDatapackSync);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    public static Logger getLogger() {
+    public static Logger logger() {
         return LOGGER;
     }
 
@@ -64,12 +62,8 @@ public final class SeasonShop {
         ModConfig config = event.getConfig();
         if (config.getSpec() == SeasonShop.getInstance().getConfigSpec()) {
             SeasonShop.LOGGER.debug("Loading " + SeasonShop.MODID + " config");
-            SeasonShopConfig.bake(config);
+            SeasonShopConfig.bake();
         }
-    }
-
-    public static ResourceLocation id(String path) {
-        return new ResourceLocation(MODID, path);
     }
 
     @SubscribeEvent

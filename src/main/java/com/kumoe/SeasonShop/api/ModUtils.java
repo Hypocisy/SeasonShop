@@ -100,7 +100,7 @@ public class ModUtils {
                 BufferedImage bufferedImage = ImageIO.read(inputStream);
                 ImageIO.write(bufferedImage, "png", avatarFile);
             } catch (IOException e) {
-                SeasonShop.getLogger().debug(e.toString());
+                SeasonShop.logger().debug(e.toString());
             }
         }
     }
@@ -114,7 +114,7 @@ public class ModUtils {
                 Minecraft.getInstance().getTextureManager().register(avatarLocation, dynamicTexture);
             });
         } catch (IOException e) {
-            SeasonShop.getLogger().debug(e.toString());
+            SeasonShop.logger().debug(e.toString());
             return null;
         }
         return avatarLocation;

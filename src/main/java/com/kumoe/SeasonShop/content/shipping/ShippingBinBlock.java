@@ -1,5 +1,6 @@
 package com.kumoe.SeasonShop.content.shipping;
 
+import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
@@ -120,9 +121,9 @@ public class ShippingBinBlock extends ChestBlock {
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (!pLevel.isClientSide()) {
+        if (pPlayer instanceof ServerPlayer serverPlayer) {
             if (pLevel.getBlockEntity(pPos) instanceof ShippingBinBlockEntity blockEntity) {
-                NetworkHooks.openScreen((ServerPlayer) pPlayer, blockEntity, byteBuf -> {
+                NetworkHooks.openScreen(serverPlayer, blockEntity, byteBuf -> {
                     byteBuf.writeBlockPos(pPos);
                     byteBuf.writeUUID(blockEntity.getOwner());
                 });

@@ -11,11 +11,11 @@ import java.util.UUID;
 
 public class PlacedBlockOwnerData extends SavedData {
     private static final String DATA_NAME = "PlacedBlockOwnersData";
-    private final static Map<UUID, Integer> placedBlockOwners = new HashMap<>();
+    private final Map<UUID, Integer> placedBlockOwners = new HashMap<>();
 
     public static PlacedBlockOwnerData load(CompoundTag pCompoundTag) {
-        PlacedBlockOwnerData data = new PlacedBlockOwnerData();
         ListTag listTag = pCompoundTag.getList("PlacedBlockCounts", ListTag.TAG_COMPOUND);
+        PlacedBlockOwnerData data = new PlacedBlockOwnerData();
         for (int i = 0; i < listTag.size(); i++) {
             CompoundTag tag = listTag.getCompound(i);
             UUID uuid = tag.getUUID("UUID");
@@ -23,14 +23,13 @@ public class PlacedBlockOwnerData extends SavedData {
             data.placedBlockOwners.put(uuid, count);
         }
         return data;
-
     }
 
-    public static int getCount(UUID uuid) {
+    public int getCount(UUID uuid) {
         return placedBlockOwners.getOrDefault(uuid, 0);
     }
 
-    public static void setCount(UUID player, int count) {
+    public void setCount(UUID player, int count) {
         placedBlockOwners.put(player, count);
     }
 
@@ -50,5 +49,4 @@ public class PlacedBlockOwnerData extends SavedData {
         tag.put("PlacedBlockCounts", listTag);
         return tag;
     }
-
 }

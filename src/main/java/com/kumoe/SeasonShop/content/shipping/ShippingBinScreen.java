@@ -5,6 +5,7 @@ import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.init.SeasonShop;
 import com.kumoe.SeasonShop.network.NetworkHandler;
 import com.kumoe.SeasonShop.network.PricesPacket;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -41,18 +42,15 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
                 (pOnPress) -> {
                     SeasonShop.getLogger().debug("Now sell items");
                     var totalPrice = 0d;
-                    if (!this.container.getItems().isEmpty()) {
-                        for (ItemStack itemStack : this.container.getItems()) {
+
+                    for (ItemStack itemStack : this.container.getItems()) {
+                        if (!itemStack.isEmpty()){
                             totalPrice += ModUtils.getTotalItemPrice(itemStack);
                         }
-                        if (this.container.getOwner() != null) {
-                            this.container.clearContent();
-                            NetworkHandler.sendToServer(PricesPacket.create(this.container.getOwner(), totalPrice, this.container.getBlockPos()));
-                            this.container.setChanged();
-                        }
-                    }else {
-                        this.onClose();
                     }
+                    this.container.clearContent();
+                    NetworkHandler.sendToServer(PricesPacket.create(this.container.getOwner(), totalPrice, this.container.getBlockPos()));
+                    this.container.setChanged();
                 });
         this.addRenderableWidget(button);
     }
@@ -81,5 +79,10 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
         int x = (this.width - this.imageWidth - 10) / 2;
         int y = (this.height - this.imageHeight - 2) / 2;
         guiGraphics.blit(SHIPPING_BIN_GUI, x, y, 0, 0, this.imageWidth, this.imageHeight);
+        ResourceLocation avatarLocation = ModUtils.loadPlayerAvatar(this.container.getOwner());
+        if (avatarLocation != null) {
+            // render player avatar
+            guiGraphics.blit(avatarLocation, x + 143, y + 27, 0, 0, 16, 16,16,16);
+        }
     }
 }

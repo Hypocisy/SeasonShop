@@ -1,5 +1,6 @@
 package com.kumoe.SeasonShop.content.shipping;
 
+import com.kumoe.SeasonShop.api.ModUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -36,6 +37,8 @@ public class ShippingBinMenu extends AbstractContainerMenu {
         BlockEntity tileAtPos = playerInventory.player.level().getBlockEntity(data.readBlockPos());
         if (tileAtPos instanceof ShippingBinBlockEntity bin) {
             bin.setOwner(data.readUUID());
+            // cache player avatar to a local client
+            ModUtils.cachePlayerAvatar(bin.getOwner());
             return bin;
         } else {
             throw new IllegalStateException("Tile entity is not correct! " + tileAtPos);

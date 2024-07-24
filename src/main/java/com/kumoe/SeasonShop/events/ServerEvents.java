@@ -16,6 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -53,7 +54,6 @@ public class ServerEvents {
 
     @SubscribeEvent
     public static void addReloadListener(AddReloadListenerEvent event) {
-//        SeasonShop.getLogger().debug("add reload listener  " + SeasonShop.getPriceLoader().toString());
         event.addListener(SeasonShop.getPriceLoader());
     }
 
@@ -64,23 +64,16 @@ public class ServerEvents {
             PlacedBlockOwnerData data = PlacedBlockOwnerData.get(serverLevel);
 
             UUID playerUUID = serverPlayer.getUUID();
-
-//            SeasonShop.getLogger().debug("player uuid: " + playerUUID);
-
-            if (playerUUID != null) {
-                int count = PlacedBlockOwnerData.getCount(playerUUID);
-                if (count < SeasonShopConfig.maxBindBlock) {
-                    shippingBe.setOwner(playerUUID);
-                    PlacedBlockOwnerData.setCount(playerUUID, count + 1);
-                    shippingBe.setChanged();
-                    data.setDirty();
-                } else {
-                    event.setCanceled(true);
-                    serverPlayer.displayClientMessage(Component.translatable(SHIPPING_BIN_TIPS.key(), SeasonShopConfig.maxBindBlock).withStyle(SHIPPING_BIN_TIPS.format()), false);
-                }
-
+            int count = data.getCount(playerUUID);
+            if (count < SeasonShopConfig.maxBindBlock) {
+                shippingBe.setOwner(playerUUID);
+                data.setCount(playerUUID, count + 1);
+                shippingBe.setChanged();
+                data.setDirty();
+            } else {
+                event.setCanceled(true);
+                serverPlayer.displayClientMessage(Component.translatable(SHIPPING_BIN_TIPS.key(), SeasonShopConfig.maxBindBlock).withStyle(SHIPPING_BIN_TIPS.format()), false);
             }
-
         }
     }
 
@@ -88,14 +81,23 @@ public class ServerEvents {
     public static void onPlayerBreakBlock(BlockEvent.BreakEvent event) {
         if (event.getPlayer() instanceof ServerPlayer serverPlayer && serverPlayer.level() instanceof ServerLevel serverLevel &&
                 serverLevel.getBlockEntity(event.getPos()) instanceof ShippingBinBlockEntity shippingBe) {
-            SeasonShop.getLogger().debug(shippingBe.getOwner().toString());
+            // get shipping block entity's owner id
             UUID playerUUID = shippingBe.getOwner();
+            SeasonShop.getLogger().debug(playerUUID.toString());
             PlacedBlockOwnerData data = PlacedBlockOwnerData.get(serverLevel);
-            int count = PlacedBlockOwnerData.getCount(playerUUID);
+            int count = data.getCount(playerUUID);
             if (count > 0) {
-                PlacedBlockOwnerData.setCount(playerUUID, count - 1);
+                data.setCount(playerUUID, count - 1);
                 data.setDirty();
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoin(EntityJoinLevelEvent event) {
+        // todo cache player image
+        if (event.getEntity() instanceof LocalPlayer localPlayer) {
+            ModUtils.cachePlayerAvatar(localPlayer.getUUID());
         }
     }
 }

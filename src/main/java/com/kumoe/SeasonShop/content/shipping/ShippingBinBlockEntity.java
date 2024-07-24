@@ -95,29 +95,6 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
         }
     }
 
-    protected static void serverTick(Level pLevel, BlockPos pPos, BlockState pState, ShippingBinBlockEntity pBlockEntity) {
-        if (pLevel.getServer() != null && pLevel.getServer().getTickCount() % 18000 == 0) {
-            // todo: send a packet to sell item
-            // todo: render how much player sold
-            SeasonShop.getLogger().debug("Now sell items");
-            var totalPrice = 0d;
-            for (ItemStack itemStack : pBlockEntity.items) {
-                totalPrice += ModUtils.getTotalItemPrice(itemStack);
-            }
-            // remove sold items
-            pBlockEntity.items.clear();
-            pBlockEntity.setChanged();
-
-            if (pBlockEntity.getOwner() != null) {
-                try {
-                    NetworkHandler.sendToServer(PricesPacket.create(pBlockEntity.getOwner(), totalPrice,pPos));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     @Override
     public int getContainerSize() {
         return containerSize;

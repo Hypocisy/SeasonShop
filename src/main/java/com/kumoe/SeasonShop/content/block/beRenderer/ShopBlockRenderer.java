@@ -1,5 +1,7 @@
-package com.kumoe.SeasonShop.content.shipping;
+package com.kumoe.SeasonShop.content.block.beRenderer;
 
+import com.kumoe.SeasonShop.content.block.ShopBlock;
+import com.kumoe.SeasonShop.content.block.entity.ShopBlockEntity;
 import com.kumoe.SeasonShop.init.SeasonShop;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

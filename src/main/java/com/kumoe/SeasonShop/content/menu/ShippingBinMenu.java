@@ -1,6 +1,8 @@
-package com.kumoe.SeasonShop.content.shipping;
+package com.kumoe.SeasonShop.content.menu;
 
 import com.kumoe.SeasonShop.api.ModUtils;
+import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
+import com.kumoe.SeasonShop.api.SeasonSlot;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;

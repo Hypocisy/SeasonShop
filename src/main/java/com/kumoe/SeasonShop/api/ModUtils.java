@@ -1,5 +1,6 @@
 package com.kumoe.SeasonShop.api;
 
+import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.data.datapack.Price;
 import com.kumoe.SeasonShop.data.datapack.PriceData;
 import com.kumoe.SeasonShop.init.SeasonShop;
@@ -40,12 +41,14 @@ public class ModUtils {
      */
     public static double getTotalItemPrice(ItemStack stack) {
         // 如果设置价格则使用基础价格与季节价格和相乘，如果没有返回默认价格。
-        return getItemPriceObject(stack) == null ? 0f : BigDecimal.valueOf(stack.getCount() * getCurrentSeasonPrice(getItemPriceObject(stack))).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        if (getItemPriceObject(stack) == null)
+            return getOneItemPrice(stack) * stack.getCount();
+        return BigDecimal.valueOf(stack.getCount() * getCurrentSeasonPrice(getItemPriceObject(stack))).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
     public static double getOneItemPrice(ItemStack stack) {
         // 如果设置价格则使用基础价格与季节价格相乘，如果没有返回默认价格。
-        return getItemPriceObject(stack) == null ? 0f : getCurrentSeasonPrice(getItemPriceObject(stack));
+        return getItemPriceObject(stack) == null ? SeasonShopConfig.defaultPrice : getCurrentSeasonPrice(getItemPriceObject(stack));
     }
 
     public static Price getItemPriceObject(ItemStack stack) {
@@ -78,10 +81,10 @@ public class ModUtils {
      */
     public static double getCurrentSeasonPrice(Price itemPrice) {
         return switch (SeasonHandler.getClientSeasonTime().getSeason()) {
-            case SPRING -> itemPrice.springPrice().orElse(0d);
-            case SUMMER -> itemPrice.summerPrice().orElse(0d);
-            case AUTUMN -> itemPrice.autumnPrice().orElse(0d);
-            case WINTER -> itemPrice.winterPrice().orElse(0d);
+            case SPRING -> itemPrice.springPrice().orElse(SeasonShopConfig.defaultPrice);
+            case SUMMER -> itemPrice.summerPrice().orElse(SeasonShopConfig.defaultPrice);
+            case AUTUMN -> itemPrice.autumnPrice().orElse(SeasonShopConfig.defaultPrice);
+            case WINTER -> itemPrice.winterPrice().orElse(SeasonShopConfig.defaultPrice);
         };
     }
 

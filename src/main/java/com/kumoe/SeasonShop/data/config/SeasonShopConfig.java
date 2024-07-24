@@ -7,6 +7,7 @@ public final class SeasonShopConfig {
 
     public static boolean enableDebug;
     public static int maxBindBlock;
+    public static double defaultPrice;
 
     public static Config config = SeasonShop.getInstance().getConfig();
 
@@ -19,6 +20,7 @@ public final class SeasonShopConfig {
         try {
             enableDebug = config.enableDebug.get();
             maxBindBlock = config.maxBindBlock.get();
+            defaultPrice = config.defaultPrice.get();
         } catch (Exception var) {
             SeasonShop.getLogger().trace("An exception was caused trying to load the config for GeneralSettings.\n%s".formatted(var));
         }

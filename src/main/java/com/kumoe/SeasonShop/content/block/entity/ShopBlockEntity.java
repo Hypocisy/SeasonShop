@@ -1,5 +1,6 @@
-package com.kumoe.SeasonShop.content.shipping;
+package com.kumoe.SeasonShop.content.block.entity;
 
+import com.kumoe.SeasonShop.content.menu.ShopMenu;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

@@ -1,10 +1,10 @@
 package com.kumoe.SeasonShop.events;
 
 import com.kumoe.SeasonShop.api.ModUtils;
-import com.kumoe.SeasonShop.content.shipping.ShippingBinBlockEntity;
-import com.kumoe.SeasonShop.content.shipping.ShippingBinMenu;
-import com.kumoe.SeasonShop.content.shipping.ShippingBinScreen;
-import com.kumoe.SeasonShop.content.shipping.ShopScreen;
+import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
+import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
+import com.kumoe.SeasonShop.content.screen.ShippingBinScreen;
+import com.kumoe.SeasonShop.content.screen.ShopScreen;
 import com.kumoe.SeasonShop.data.PlacedBlockOwnerData;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.init.SeasonShop;

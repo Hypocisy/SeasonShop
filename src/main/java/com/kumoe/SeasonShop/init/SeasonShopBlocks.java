@@ -1,6 +1,15 @@
 package com.kumoe.SeasonShop.init;
 
-import com.kumoe.SeasonShop.content.shipping.*;
+import com.kumoe.SeasonShop.content.block.beRenderer.ShippingBinRenderer;
+import com.kumoe.SeasonShop.content.block.beRenderer.ShopBlockRenderer;
+import com.kumoe.SeasonShop.content.block.ShippingBinBlock;
+import com.kumoe.SeasonShop.content.block.ShopBlock;
+import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
+import com.kumoe.SeasonShop.content.block.entity.ShopBlockEntity;
+import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
+import com.kumoe.SeasonShop.content.menu.ShopMenu;
+import com.kumoe.SeasonShop.content.screen.ShippingBinScreen;
+import com.kumoe.SeasonShop.content.screen.ShopScreen;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.MenuEntry;

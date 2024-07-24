@@ -1,6 +1,7 @@
-package com.kumoe.SeasonShop.content.shipping;
+package com.kumoe.SeasonShop.content.block.entity;
 
 import com.kumoe.SeasonShop.api.ModUtils;
+import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
 import com.kumoe.SeasonShop.init.SeasonShop;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
 import com.kumoe.SeasonShop.network.NetworkHandler;

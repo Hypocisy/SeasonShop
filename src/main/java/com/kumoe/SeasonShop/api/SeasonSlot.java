@@ -1,4 +1,4 @@
-package com.kumoe.SeasonShop.content.shipping;
+package com.kumoe.SeasonShop.api;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;

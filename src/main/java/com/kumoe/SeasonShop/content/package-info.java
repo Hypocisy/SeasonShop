@@ -1,6 +1,6 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package com.kumoe.SeasonShop.content.shipping;
+package com.kumoe.SeasonShop.content;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

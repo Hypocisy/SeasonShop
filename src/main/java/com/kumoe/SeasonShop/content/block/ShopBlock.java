@@ -1,5 +1,6 @@
-package com.kumoe.SeasonShop.content.shipping;
+package com.kumoe.SeasonShop.content.block;
 
+import com.kumoe.SeasonShop.content.block.entity.ShopBlockEntity;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;

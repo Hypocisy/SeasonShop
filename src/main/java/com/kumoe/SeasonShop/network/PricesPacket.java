@@ -1,6 +1,6 @@
 package com.kumoe.SeasonShop.network;
 
-import com.kumoe.SeasonShop.content.shipping.ShippingBinBlockEntity;
+import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;

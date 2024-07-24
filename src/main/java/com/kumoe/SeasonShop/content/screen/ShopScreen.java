@@ -1,6 +1,7 @@
-package com.kumoe.SeasonShop.content.shipping;
+package com.kumoe.SeasonShop.content.screen;
 
 import com.kumoe.SeasonShop.api.ModUtils;
+import com.kumoe.SeasonShop.content.menu.ShopMenu;
 import com.kumoe.SeasonShop.init.SeasonShop;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

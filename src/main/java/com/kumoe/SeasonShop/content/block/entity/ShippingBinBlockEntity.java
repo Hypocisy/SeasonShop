@@ -53,6 +53,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
     };
     private final NonNullList<ItemStack> items = NonNullList.withSize(18, ItemStack.EMPTY);
     private UUID uuid;
+    private double price;
 
     public ShippingBinBlockEntity(BlockEntityType<? extends ShippingBinBlockEntity> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
@@ -80,7 +81,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
             SeasonShop.logger().debug("Now sell items");
             var totalPrice = 0d;
             for (ItemStack itemStack : pBlockEntity.items) {
-                totalPrice += ModUtils.getTotalItemPrice(itemStack);
+                totalPrice += ModUtils.getOneItemPrice(itemStack) * itemStack.getCount();
             }
             // remove sold items
             pBlockEntity.items.clear();
@@ -166,5 +167,13 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
     @Override
     public NonNullList<ItemStack> getItems() {
         return this.items;
+    }
+
+    public double getPrice() {
+        return this.price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

@@ -73,11 +73,9 @@ public class ServerEvents {
     public static void onItemTooltip(ItemTooltipEvent event) {
         Player player = event.getEntity();
         if (player != null) {
-            if (player.level().isClientSide()) {
-                if (event.getEntity().containerMenu instanceof ShippingBinMenu) {
-                    event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_1, ModUtils.getOneItemPrice(event.getItemStack())));
-                    event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_2, ModUtils.getTotalItemPrice(event.getItemStack())));
-                }
+            if (player.level().isClientSide() && player.containerMenu instanceof ShippingBinMenu) {
+                event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_1, ModUtils.getOneItemPrice(event.getItemStack())));
+                event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_2, ModUtils.getOneItemPrice(event.getItemStack()) * event.getItemStack().getCount()));
             }
         }
     }

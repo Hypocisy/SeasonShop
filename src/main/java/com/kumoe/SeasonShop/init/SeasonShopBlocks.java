@@ -1,11 +1,11 @@
 package com.kumoe.SeasonShop.init;
 
-import com.kumoe.SeasonShop.content.block.renderer.ShippingBinRenderer;
-import com.kumoe.SeasonShop.content.block.renderer.ShopBlockRenderer;
 import com.kumoe.SeasonShop.content.block.ShippingBinBlock;
 import com.kumoe.SeasonShop.content.block.ShopBlock;
 import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
 import com.kumoe.SeasonShop.content.block.entity.ShopBlockEntity;
+import com.kumoe.SeasonShop.content.block.renderer.ShippingBinRenderer;
+import com.kumoe.SeasonShop.content.block.renderer.ShopBlockRenderer;
 import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
 import com.kumoe.SeasonShop.content.menu.ShopMenu;
 import com.kumoe.SeasonShop.content.screen.ShippingBinScreen;
@@ -58,9 +58,9 @@ public class SeasonShopBlocks {
 
     private static void registerBlock() {
         SHIPPING_BIN_BLOCK = SeasonShop.REGISTRATE.block("shipping_bin", ShippingBinBlock::new)
-                .properties((properties) -> BlockBehaviour.Properties.copy(Blocks.CHEST)).blockstate(ShippingBinBlock::buildModel).tag(BlockTags.MINEABLE_WITH_AXE).item().tab(SEASON_SHOP_TAB.getKey(),(ctx, modifier) -> modifier.accept(ctx)).build().register();
+                .properties((properties) -> BlockBehaviour.Properties.copy(Blocks.CHEST)).blockstate(ShippingBinBlock::buildModel).tag(BlockTags.MINEABLE_WITH_AXE).item().tab(SEASON_SHOP_TAB.getKey(), (ctx, modifier) -> modifier.accept(ctx)).build().register();
         SHOP_BLOCK = SeasonShop.REGISTRATE.block("shop_block", ShopBlock::new)
-                .properties((properties) -> BlockBehaviour.Properties.copy(Blocks.CHEST)).blockstate(ShopBlock::buildModel).tag(BlockTags.MINEABLE_WITH_AXE).item().tab(SEASON_SHOP_TAB.getKey(),(ctx, modifier) -> modifier.accept(ctx)).build().register();
+                .properties((properties) -> BlockBehaviour.Properties.copy(Blocks.CHEST)).blockstate(ShopBlock::buildModel).tag(BlockTags.MINEABLE_WITH_AXE).item().tab(SEASON_SHOP_TAB.getKey(), (ctx, modifier) -> modifier.accept(ctx)).build().register();
     }
 
 }

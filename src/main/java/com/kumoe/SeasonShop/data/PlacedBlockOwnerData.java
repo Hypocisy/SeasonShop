@@ -25,16 +25,16 @@ public class PlacedBlockOwnerData extends SavedData {
         return data;
     }
 
+    public static PlacedBlockOwnerData get(ServerLevel level) {
+        return level.getDataStorage().computeIfAbsent(PlacedBlockOwnerData::load, PlacedBlockOwnerData::new, DATA_NAME);
+    }
+
     public int getCount(UUID uuid) {
         return placedBlockOwners.getOrDefault(uuid, 0);
     }
 
     public void setCount(UUID player, int count) {
         placedBlockOwners.put(player, count);
-    }
-
-    public static PlacedBlockOwnerData get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(PlacedBlockOwnerData::load, PlacedBlockOwnerData::new, DATA_NAME);
     }
 
     @Override

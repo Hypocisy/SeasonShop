@@ -11,6 +11,7 @@ import com.kumoe.SeasonShop.network.NetworkHandler;
 import com.kumoe.SeasonShop.network.PricesPacket;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +49,8 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
                     double totalPrice = 0d;
                     for (ItemStack itemStack : this.container.getItems()) {
                         if (!itemStack.isEmpty()) {
-                            totalPrice += ModUtils.getTotalItemPrice(itemStack);
+                            totalPrice += ModUtils.getOneItemPrice(itemStack) * itemStack.getCount();
+                            ModUtils.recordTransaction(itemStack, itemStack.getCount());
                         }
                     }
                     if (totalPrice != 0) {
@@ -62,6 +64,7 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
                     }
                     this.player.closeContainer();
                 });
+        button.setTooltip(Tooltip.create(ModUtils.getLangComponent(SSLangData.SHIPPING_BIN_TOOLTIP_4)));
         this.addRenderableWidget(button);
     }
 
@@ -71,6 +74,7 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
         this.inventoryLabelY = this.imageHeight - 98;
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
+
     }
 
     @Override

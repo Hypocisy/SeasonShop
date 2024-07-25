@@ -6,6 +6,8 @@
   "season_shop.block.season_shop.shipping_bin.tooltip_1": "单价: %s",
   "season_shop.block.season_shop.shipping_bin.tooltip_2": "总价: %s",
   "season_shop.block.season_shop.shipping_bin.tooltip_3": "您不可售卖物品，因为箱子是空的！",
+  "season_shop.block.season_shop.shipping_bin.tooltip_4": "点击可售卖物品",
+  "season_shop.block.season_shop.shipping_bin.tooltip_5": "店主: %s",
   "season_shop.command.season_shop.clean_avatar_cache.failed": "已经没有更多的头像缓存可清除了!",
   "season_shop.command.season_shop.clean_avatar_cache.only_player": "只有玩家可以使用该命令!",
   "season_shop.command.season_shop.clean_avatar_cache.success": "你清除了SeasonShop的所有头像缓存!"

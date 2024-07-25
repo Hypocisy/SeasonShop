@@ -13,6 +13,8 @@ public enum SSLangData {
     SHIPPING_BIN_TOOLTIP_1("block.season_shop.shipping_bin.tooltip_1", "单价: %s", 1, ChatFormatting.DARK_AQUA),
     SHIPPING_BIN_TOOLTIP_2("block.season_shop.shipping_bin.tooltip_2", "总价: %s", 1, ChatFormatting.YELLOW),
     SHIPPING_BIN_TOOLTIP_3("block.season_shop.shipping_bin.tooltip_3", "您不可售卖物品，因为箱子是空的！", 0, ChatFormatting.RED),
+    SHIPPING_BIN_TOOLTIP_4("block.season_shop.shipping_bin.tooltip_4", "点击可售卖物品", 0, ChatFormatting.DARK_AQUA),
+    SHIPPING_BIN_TOOLTIP_5("block.season_shop.shipping_bin.tooltip_5", "店主: %s", 1, ChatFormatting.YELLOW),
     SHIPPING_BIN_TIPS("block.season_shop.shipping_bin.tips", "You can only place up to %s of these blocks!", 1, ChatFormatting.RED),
     COMMAND_CLEAN_AVATAR_SUCCESS("command.season_shop.clean_avatar_cache.success", "你清除了SeasonShop的所有头像缓存!", 0, ChatFormatting.GRAY),
     COMMAND_CLEAN_AVATAR_FAILED("command.season_shop.clean_avatar_cache.failed", "已经没有更多的头像缓存可清除了!", 0, ChatFormatting.RED),

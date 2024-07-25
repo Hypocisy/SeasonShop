@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -28,37 +29,57 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public class ModUtils {
 
     public static final String AVATAR_CACHE_DIR = "avatarCache" + File.separator;
+    private static final long TRANSACTION_WINDOW = SeasonShopConfig.transactionWindow; // 1小时
+    private static final int EXPECTED_TRANSACTIONS = SeasonShopConfig.expectedTransactions;// 每小时预期的"正常"交易量
+    private static final double PRICE_CHANGE_FACTOR = SeasonShopConfig.priceChangeFactor;  // 每个物品对价格的影响因子
+    private static final Map<ResourceLocation, List<Transaction>> recentTransactions = new HashMap<>();
     protected static Map<ResourceLocation, PriceData> priceDataMap = SeasonShop.getPriceLoader().getLoader();
     // size - overlay - default
-    protected static String api = "https://crafatar.com/avatars/";
-    protected static String params = "?size=16";
+    protected static String api = SeasonShopConfig.apiUrl;
+    protected static String params = SeasonShopConfig.apiParams;
 
-    /**
-     * @param stack The item of slot
-     * @return Item price
-     */
-    public static double getTotalItemPrice(ItemStack stack) {
-        // 如果设置价格则使用基础价格与季节价格和相乘，如果没有返回默认价格。
-        Price price = getItemPriceObject(stack);
-        double oneItemPrice = getOneItemPrice(stack);
-        if (price == null)
-            return oneItemPrice * stack.getCount();
-        return BigDecimal.valueOf(stack.getCount() * getCurrentSeasonPrice(price)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+    public static void recordTransaction(ItemStack stack, int quantity) {
+        ResourceLocation itemId = stackToResourceLocation(stack);
+        if (!recentTransactions.containsKey(itemId)) {
+            recentTransactions.put(itemId, new ArrayList<>());
+        }
+        recentTransactions.get(itemId).add(new Transaction(System.currentTimeMillis(), quantity));
+    }
+
+    private static double calculateDemandMultiplier(ResourceLocation itemId) {
+        List<Transaction> transactions = recentTransactions.get(itemId);
+        if (transactions == null || transactions.isEmpty()) {
+            return 1.0;
+        }
+        long currentTime = System.currentTimeMillis();
+        int totalQuantity = 0;
+        transactions.removeIf(transaction -> currentTime - transaction.timestamp > TRANSACTION_WINDOW);
+        for (Transaction transaction : transactions) {
+            totalQuantity += transaction.quantity;
+        }
+        // 计算价格变化
+        double multiplier = 1.0 + (EXPECTED_TRANSACTIONS - totalQuantity) * PRICE_CHANGE_FACTOR;
+        // 限制价格变化范围
+        return Mth.absMax(SeasonShopConfig.minPriceLimit, Math.min(SeasonShopConfig.maxPriceLimit, multiplier));
     }
 
     public static double getOneItemPrice(ItemStack stack) {
         // 如果设置价格则使用基础价格与季节价格相乘，如果没有返回默认价格。
         Price price = getItemPriceObject(stack);
-        if (price != null) {
-            return getCurrentSeasonPrice(price);
-        }
-        return SeasonShopConfig.defaultPrice;
+        double basePrice = (price != null) ? getCurrentSeasonPrice(price) : SeasonShopConfig.defaultPrice;
+        ResourceLocation itemId = stackToResourceLocation(stack);
+        double demandMultiplier = itemId == null ? 1.0 : calculateDemandMultiplier(itemId);
+
+        return BigDecimal.valueOf(basePrice * demandMultiplier).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
     @Nullable
@@ -171,5 +192,15 @@ public class ModUtils {
 
     public static MutableComponent getLangComponent(SSLangData langData, Object... pArgs) {
         return Component.translatable(langData.key(), pArgs).withStyle(langData.format());
+    }
+
+    private static class Transaction {
+        long timestamp;
+        int quantity;
+
+        Transaction(long timestamp, int quantity) {
+            this.timestamp = timestamp;
+            this.quantity = quantity;
+        }
     }
 }

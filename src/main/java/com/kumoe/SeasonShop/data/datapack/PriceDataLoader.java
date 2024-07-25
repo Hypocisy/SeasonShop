@@ -31,7 +31,7 @@ public class PriceDataLoader<T extends PriceData> extends SimplePreparableReload
         var loader = listResources(pResourceManager, pProfiler);
 
         pProfiler.pop();
-        if (SeasonShopConfig.enableDebug){
+        if (SeasonShopConfig.enableDebug) {
             loader.forEach((resourceLocation, t) -> {
                 SeasonShop.logger().debug("loading item price data: {}", resourceLocation);
                 t.prices().forEach((itemId, itemPrice) -> SeasonShop.logger().debug("loading item price data:{} base {}\n spring {}\n summer {}\n autumn {}\n winter {}",
@@ -50,6 +50,7 @@ public class PriceDataLoader<T extends PriceData> extends SimplePreparableReload
     public T getData(ResourceLocation pItemId) {
         return loader.get(pItemId);
     }
+
     @SuppressWarnings("unchecked")
     public Map<ResourceLocation, T> listResources(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
         for (Map.Entry<ResourceLocation, Resource> resource : pResourceManager.listResources(FOLDER, p -> p.getPath().endsWith(".json")).entrySet()) {

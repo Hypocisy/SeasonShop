@@ -125,6 +125,7 @@ public class ShippingBinBlock extends ChestBlock {
                 NetworkHooks.openScreen(serverPlayer, blockEntity, byteBuf -> {
                     byteBuf.writeBlockPos(pPos);
                     byteBuf.writeUUID(blockEntity.getOwner());
+                    byteBuf.writeDouble(blockEntity.getPrice());
                 });
                 pPlayer.awardStat(this.getOpenChestStat());
                 PiglinAi.angerNearbyPiglins(pPlayer, true);

@@ -17,6 +17,8 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 import static com.kumoe.SeasonShop.data.SSLangData.*;
@@ -75,7 +77,7 @@ public class ServerEvents {
         if (player != null) {
             if (player.level().isClientSide() && player.containerMenu instanceof ShippingBinMenu) {
                 event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_1, ModUtils.getOneItemPrice(event.getItemStack())));
-                event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_2, ModUtils.getOneItemPrice(event.getItemStack()) * event.getItemStack().getCount()));
+                event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_2, BigDecimal.valueOf(ModUtils.getOneItemPrice(event.getItemStack()) * event.getItemStack().getCount()).setScale(2, RoundingMode.HALF_UP).doubleValue()));
             }
         }
     }

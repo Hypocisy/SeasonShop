@@ -3,6 +3,7 @@ package com.kumoe.SeasonShop.content.menu;
 import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -15,22 +16,22 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public class ShippingBinMenu extends AbstractContainerMenu {
-    protected final ShippingBinBlockEntity container;
+    protected final Container container;
     protected final Inventory playerInventory;
-    protected int containerRows = 3;
-    protected int containerColumns = 6;
+    protected final int containerRows;
+    protected final int containerColumns = 6;
 
-
-    public ShippingBinMenu(MenuType<ShippingBinMenu> menu, int windowId, Inventory pPlayerInventory, ShippingBinBlockEntity pContainer) {
+    public ShippingBinMenu(MenuType<ShippingBinMenu> menu, int windowId, Inventory pPlayerInventory, int pContainerRows, Container pContainer) {
         super(menu, windowId);
         this.container = pContainer;
         this.playerInventory = pPlayerInventory;
+        this.containerRows = pContainerRows;
         this.addSlot();
         this.container.startOpen(pPlayerInventory.player);
     }
 
-    public ShippingBinMenu(MenuType<ShippingBinMenu> menu, int windowId, Inventory pPlayerInventory, FriendlyByteBuf data) {
-        this(menu, windowId, pPlayerInventory, getTileEntity(pPlayerInventory, data));
+    public ShippingBinMenu(MenuType<ShippingBinMenu> menu, int containerId, Inventory pPlayerInventory, int pContainerRows, FriendlyByteBuf data) {
+        this(menu, containerId, pPlayerInventory, pContainerRows, getTileEntity(pPlayerInventory, data));
     }
 
     private static ShippingBinBlockEntity getTileEntity(Inventory playerInventory, FriendlyByteBuf data) {
@@ -47,8 +48,12 @@ public class ShippingBinMenu extends AbstractContainerMenu {
         }
     }
 
-    public static ShippingBinMenu factory(MenuType<ShippingBinMenu> shippingBinMenuMenuType, int i, Inventory inventory, FriendlyByteBuf byteBuf) {
-        return new ShippingBinMenu(shippingBinMenuMenuType, i, inventory, byteBuf);
+    public static ShippingBinMenu factory(MenuType<ShippingBinMenu> shippingBinMenuType, int containerId, Inventory inventory, int pContainerRows, FriendlyByteBuf data) {
+        return new ShippingBinMenu(shippingBinMenuType, containerId, inventory, pContainerRows, data);
+    }
+
+    public static ShippingBinMenu factory(MenuType<ShippingBinMenu> shippingBinMenuType, int containerId, Inventory inventory, FriendlyByteBuf data) {
+        return factory(shippingBinMenuType, containerId, inventory, 3, data);
     }
 
     void addSlot() {
@@ -124,7 +129,7 @@ public class ShippingBinMenu extends AbstractContainerMenu {
         return super.clickMenuButton(pPlayer, pId);
     }
 
-    public ShippingBinBlockEntity getContainer() {
+    public Container getContainer() {
         return container;
     }
 }

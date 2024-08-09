@@ -14,7 +14,9 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -28,7 +30,7 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
     final ResourceLocation SHIPPING_BIN_GUI = new ResourceLocation(SeasonShop.MODID, "textures/gui/shipping_bin.png");
     final Inventory playerInventory;
     protected ShippingBinMenu menu;
-    protected ShippingBinBlockEntity container;
+    protected Container container;
     protected Player player;
 
     public ShippingBinScreen(ShippingBinMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
@@ -47,22 +49,27 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
         ImageButton button = new ImageButton((this.width - this.imageWidth - 10) / 2 + 143, (this.height - this.imageHeight - 2) / 2 + 50, 16, 16, this.imageWidth, 0, 16, SHIPPING_BIN_GUI,
                 (pOnPress) -> {
                     double totalPrice = 0d;
-                    for (ItemStack itemStack : this.container.getItems()) {
-                        if (!itemStack.isEmpty()) {
-                            totalPrice += ModUtils.getOneItemPrice(itemStack) * itemStack.getCount();
-                            ModUtils.recordTransaction(itemStack, itemStack.getCount());
+                    if (container instanceof ShippingBinBlockEntity shippingBinBlockEntity) {
+                        for (ItemStack itemStack : shippingBinBlockEntity.getItems()) {
+                            if (!itemStack.isEmpty()) {
+                                totalPrice += ModUtils.getOneItemPrice(itemStack) * itemStack.getCount();
+                                ModUtils.recordTransaction(itemStack, itemStack.getCount());
+                            }
                         }
-                    }
-                    if (totalPrice != 0) {
-                        // send sell request
-                        NetworkHandler.sendToServer(PricesPacket.create(this.container.getOwner(), totalPrice, this.container.getBlockPos()));
-                        if (SeasonShopConfig.enableDebug) {
-                            SeasonShop.logger().debug("total price: {}", totalPrice);
+                        if (totalPrice != 0d) {
+                            // send sell request
+                            NetworkHandler.sendToServer(PricesPacket.create(shippingBinBlockEntity.getOwner(), totalPrice, shippingBinBlockEntity.getBlockPos()));
+                            KanBanGirlOverlay.setMessage(ModUtils.getLangComponent(SSLangData.SHIPPING_BIN_TOOLTIP_2, totalPrice).withStyle(Style.EMPTY.withBold(true)));
+                            if (SeasonShopConfig.enableDebug) {
+                                SeasonShop.logger().debug("total price: {}", totalPrice);
+                            }
+                        } else {
+                            KanBanGirlOverlay.setMessage(ModUtils.getLangComponent(SSLangData.SHIPPING_BIN_TOOLTIP_3));
                         }
-                    } else {
-                        this.player.sendSystemMessage(ModUtils.getLangComponent(SSLangData.SHIPPING_BIN_TOOLTIP_3));
+                        this.player.closeContainer();
+                        KanBanGirlOverlay.switchRendering();
                     }
-                    this.player.closeContainer();
+
                 });
         button.setTooltip(Tooltip.create(ModUtils.getLangComponent(SSLangData.SHIPPING_BIN_TOOLTIP_4)));
         this.addRenderableWidget(button);
@@ -93,12 +100,14 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
         int x = (this.width - this.imageWidth - 10) / 2;
         int y = (this.height - this.imageHeight - 2) / 2;
         guiGraphics.blit(SHIPPING_BIN_GUI, x, y, 0, 0, this.imageWidth, this.imageHeight);
-        File avatarFile = ModUtils.getAvatarFile(this.container.getOwner());
-        if (avatarFile.exists()) {
-            // render player avatar
-            ResourceLocation avatarLocation = ModUtils.loadPlayerAvatar(avatarFile, this.container.getOwner());
-            if (avatarLocation != null) {
-                guiGraphics.blit(avatarLocation, x + 143, y + 27, 0, 0, 16, 16, 16, 16);
+        if (container instanceof ShippingBinBlockEntity shippingBinBlockEntity) {
+            File avatarFile = ModUtils.getAvatarFile(shippingBinBlockEntity.getOwner());
+            if (avatarFile.exists()) {
+                // render player avatar
+                ResourceLocation avatarLocation = ModUtils.loadPlayerAvatar(avatarFile, shippingBinBlockEntity.getOwner());
+                if (avatarLocation != null) {
+                    guiGraphics.blit(avatarLocation, x + 143, y + 27, 0, 0, 16, 16, 16, 16);
+                }
             }
         }
     }

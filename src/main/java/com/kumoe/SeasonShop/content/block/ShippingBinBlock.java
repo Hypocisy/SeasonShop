@@ -1,19 +1,19 @@
 package com.kumoe.SeasonShop.content.block;
 
 import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
+import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -42,11 +42,12 @@ public class ShippingBinBlock extends ChestBlock {
 
     static final DoubleBlockCombiner.Combiner<ShippingBinBlockEntity, Optional<MenuProvider>> MENU_PROVIDER_COMBINER = new DoubleBlockCombiner.Combiner<>() {
         public Optional<MenuProvider> acceptDouble(final ShippingBinBlockEntity chestBlockEntity1, final ShippingBinBlockEntity chestBlockEntity2) {
+            final Container container = new CompoundContainer(chestBlockEntity1, chestBlockEntity2);
             return Optional.of(new MenuProvider() {
                 @Nullable
                 @Override
                 public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-                    return chestBlockEntity1.canOpen(pPlayer) && chestBlockEntity2.canOpen(pPlayer) ? SeasonShopBlocks.SHIPPING_BIN_BLOCK_MENU.create(pContainerId, pPlayerInventory) : null;
+                    return chestBlockEntity1.canOpen(pPlayer) && chestBlockEntity2.canOpen(pPlayer) ? new ShippingBinMenu(SeasonShopBlocks.SHIPPING_BIN_BLOCK_MENU.get(), pContainerId, pPlayerInventory,3, container) : null;
                 }
 
                 @Override
@@ -64,6 +65,19 @@ public class ShippingBinBlock extends ChestBlock {
         }
 
         public Optional<MenuProvider> acceptNone() {
+            return Optional.empty();
+        }
+    };
+    private static final DoubleBlockCombiner.Combiner<ShippingBinBlockEntity, Optional<Container>> CHEST_COMBINER = new DoubleBlockCombiner.Combiner<>() {
+        public Optional<Container> acceptDouble(ShippingBinBlockEntity be1, ShippingBinBlockEntity be2) {
+            return Optional.of(new CompoundContainer(be1, be2));
+        }
+
+        public Optional<Container> acceptSingle(ShippingBinBlockEntity be1) {
+            return Optional.of(be1);
+        }
+
+        public Optional<Container> acceptNone() {
             return Optional.empty();
         }
     };
@@ -113,6 +127,11 @@ public class ShippingBinBlock extends ChestBlock {
         };
     }
 
+    @Nullable
+    public static Container getContainer(ShippingBinBlock pChest, BlockState pState, Level pLevel, BlockPos pPos, boolean pOverride) {
+        return pChest.combine(pState, pLevel, pPos, pOverride).apply(CHEST_COMBINER).orElse(null);
+    }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
         return super.getStateForPlacement(pContext);
@@ -122,7 +141,7 @@ public class ShippingBinBlock extends ChestBlock {
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (pPlayer instanceof ServerPlayer serverPlayer) {
             if (pLevel.getBlockEntity(pPos) instanceof ShippingBinBlockEntity blockEntity) {
-                NetworkHooks.openScreen(serverPlayer, blockEntity, byteBuf -> {
+                NetworkHooks.openScreen(serverPlayer, this.getMenuProvider(pState, pLevel, pPos), byteBuf -> {
                     byteBuf.writeBlockPos(pPos);
                     byteBuf.writeUUID(blockEntity.getOwner());
                     byteBuf.writeDouble(blockEntity.getPrice());

@@ -95,7 +95,7 @@ public class PricePacket {
         - send 方法：确保按照正确的顺序写入数据（版本号、长度信息、字节数组、价格），并根据消息内容计算缓冲区的大小。
 
 ## Mod方面
-1. 创建一个NetworkHandler
+- 创建一个NetworkHandler
 ```java
 public class NetworkHandler {
     private static final String PROTOCOL_VERSION = "1";
@@ -111,7 +111,7 @@ public class NetworkHandler {
     }
 }
 ```
-2. 在你的mod主文件中加上
+- 在你的mod主文件中加上
 ```java
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(YourMod.MODID)
@@ -150,7 +150,7 @@ public final class YourMod {
     }
 }
 ```
-3. 创建需要发送的包
+- 创建需要发送的包
 ```java
 public class PricesPacket {
     private final String itemId;

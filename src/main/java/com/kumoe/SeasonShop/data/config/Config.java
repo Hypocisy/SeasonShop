@@ -25,7 +25,7 @@ public class Config {
             expectedTransactions = builder.comment("设置预期滑动窗口的“正常”交易量 x(x越大, 降价的速度越慢，x越小，降价的速度越快。").comment("实际交易量>x时将会按比例降价，小于x时按比例涨价").defineInRange("expectedTransactions", 640, 0, Integer.MAX_VALUE);
             priceChangeFactor = builder.comment("设置每个物品对价格的影响因子").defineInRange("priceChangeFactor", 0.005, 0.00001, Double.MAX_VALUE);
             minPriceLimit = builder.comment("设置最低降价到原来基础价格的百分比").defineInRange("minPriceLimit", 0.5, 0.01, Double.MAX_VALUE);
-            maxPriceLimit = builder.comment("设置最高涨价价到原来基础价格的百分比").defineInRange("maxPriceLimit", 1.5, 0.01, Double.MAX_VALUE);
+            maxPriceLimit = builder.comment("设置最高涨价到原来基础价格的百分比").defineInRange("maxPriceLimit", 1.5, 0.01, Double.MAX_VALUE);
             defaultPrice = builder.comment("设置数据包未定义物品的价格").defineInRange("defaultPrice", 1f, 0f, Double.MAX_VALUE);
         }
         builder.pop();

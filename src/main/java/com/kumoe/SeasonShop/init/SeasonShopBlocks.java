@@ -18,11 +18,8 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import sereneseasons.core.SereneSeasons;
 
 public class SeasonShopBlocks {
-
-
     public static BlockEntityEntry<ShopBlockEntity> SHOP_BE;
     public static MenuEntry<ShippingBinMenu> SHIPPING_BIN_BLOCK_MENU;
     public static MenuEntry<ShopMenu> SHOP_BLOCK_MENU;
@@ -43,7 +40,7 @@ public class SeasonShopBlocks {
     }
 
     private static void registerCreativeModTab() {
-        SEASON_SHOP_TAB = SeasonShop.REGISTRATE.object("season_shop").defaultCreativeTab(tab -> tab.withLabelColor(0xFF00AA32).withTabsAfter(SereneSeasons.CREATIVE_TAB_REGISTER.getRegistryName())).register();
+        SEASON_SHOP_TAB = SeasonShop.REGISTRATE.object("season_shop").defaultCreativeTab(tab -> tab.withLabelColor(0xFF00AA32)).register();
     }
 
     private static void registerBlockEntity() {

@@ -1,5 +1,6 @@
 package com.kumoe.SeasonShop.init;
 
+import com.kumoe.SeasonShop.content.screen.KanBanGirlOverlay;
 import com.kumoe.SeasonShop.data.SSLangData;
 import com.kumoe.SeasonShop.data.config.Config;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
@@ -10,6 +11,9 @@ import com.kumoe.SeasonShop.network.S2CPriceSyncPacket;
 import com.mojang.logging.LogUtils;
 import com.tterrag.registrate.Registrate;
 import com.tterrag.registrate.providers.ProviderType;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.OnDatapackSyncEvent;
@@ -84,5 +88,11 @@ public final class SeasonShop {
 
     public ForgeConfigSpec getConfigSpec() {
         return configured.getRight();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void registerGuiOverlayEvent(final RegisterGuiOverlaysEvent evt) {
+        evt.registerAboveAll("kanban_girl", new KanBanGirlOverlay());
     }
 }

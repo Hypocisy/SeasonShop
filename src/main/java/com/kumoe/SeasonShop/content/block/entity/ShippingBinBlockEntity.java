@@ -2,7 +2,6 @@ package com.kumoe.SeasonShop.content.block.entity;
 
 import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
-import com.kumoe.SeasonShop.init.SeasonShop;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
 import com.kumoe.SeasonShop.network.NetworkHandler;
 import com.kumoe.SeasonShop.network.PricesPacket;
@@ -14,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +31,6 @@ import java.util.UUID;
 
 public class ShippingBinBlockEntity extends ChestBlockEntity {
 
-    protected static final int containerSize = 18;
     private final ChestLidController chestLidController;
     private final ContainerOpenersCounter openersCounter = new ContainerOpenersCounter() {
         protected void onOpen(Level level, BlockPos blockPos, BlockState state) {
@@ -51,7 +50,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
             return pPlayer.containerMenu instanceof ShippingBinMenu;
         }
     };
-    private final NonNullList<ItemStack> items = NonNullList.withSize(18, ItemStack.EMPTY);
+    private NonNullList<ItemStack> items = NonNullList.withSize(18, ItemStack.EMPTY);
     private UUID uuid;
     private double price;
 
@@ -75,10 +74,8 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
 
     public static void lidAnimateTick(Level pLevel, BlockPos pPos, BlockState pState, ShippingBinBlockEntity pBlockEntity) {
         pBlockEntity.getChestLidController().tickLid();
-//        SeasonShop.getLogger().debug("Current game time: {}", pLevel.getGameTime());
         if (pLevel.getServer() != null && pLevel.getServer().getTickCount() % 18000 == 0) {
             // todo: render how much player sold
-            SeasonShop.logger().debug("Now sell items");
             var totalPrice = 0d;
             for (ItemStack itemStack : pBlockEntity.items) {
                 totalPrice += ModUtils.getOneItemPrice(itemStack) * itemStack.getCount();
@@ -91,7 +88,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
 
     @Override
     public int getContainerSize() {
-        return containerSize;
+        return this.items.size();
     }
 
     @Override
@@ -112,7 +109,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
     @Nullable
     @Override
     public ShippingBinMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return this.canOpen(pPlayer) ? new ShippingBinMenu(SeasonShopBlocks.SHIPPING_BIN_BLOCK_MENU.get(), pContainerId, pPlayerInventory, this) : null;
+        return this.canOpen(pPlayer) ? new ShippingBinMenu(SeasonShopBlocks.SHIPPING_BIN_BLOCK_MENU.get(), pContainerId, pPlayerInventory, 3, this) : null;
     }
 
     @Override
@@ -142,6 +139,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
     @Override
     public void load(CompoundTag pTag) {
         super.load(pTag);
+        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         if (!pTag.isEmpty() && pTag.contains("ownEntity.playerUuid")) {
             uuid = pTag.getUUID("ownEntity.playerUuid");
         }
@@ -153,6 +151,9 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
         super.saveAdditional(pTag);
         if (!pTag.isEmpty() && uuid != null) {
             pTag.putUUID("ownEntity.playerUuid", uuid);
+        }
+        if (!this.trySaveLootTable(pTag)) {
+            ContainerHelper.saveAllItems(pTag, this.items);
         }
     }
 

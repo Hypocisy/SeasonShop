@@ -145,6 +145,18 @@ repositories {
         url "https://maven.blamejared.com"
     }
 
+    maven {
+        name = 'Paper'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+    maven {
+        name = 'Spigot'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    flatDir {
+        dir 'libs'
+    }
+
     mavenLocal()
     mavenCentral()
 }
@@ -169,19 +181,24 @@ dependencies {
 
 //    compileOnly fg.deobf("curse.maven:serene-seasons-291874:4761603")
 //    runtimeOnly fg.deobf("curse.maven:serene-seasons-291874:4761603")
-    implementation fg.deobf("curse.maven:serene-seasons-291874:4761603")
+    implementation fg.deobf("curse.maven:serene-seasons-291874:5790653")
     // MC<minecraft_version>-<registrate_version>
     implementation fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.11")
     // [MC<minecraft_version>,MC<next_minecraft_version>)
     jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: "[MC1.20,MC1.21)")
+    compileOnly('io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT')
+    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
+//    implementation fileTree(dir: 'lib', include: ['*.jar'])
+//    implementation files("libs\\atm_mod-0.2.2-all.jar")
+    implementation fg.deobf("curse.maven:glitchcore-955399:5787839")
 
 //    implementation fg.deobf("curse.maven:l2library-620203:5355117")
 }
 
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-    config "${mod_id}.mixins.json"
-}
+//mixin {
+//    add sourceSets.main, "${mod_id}.refmap.json"
+//    config "${mod_id}.mixins.json"
+//}
 
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.

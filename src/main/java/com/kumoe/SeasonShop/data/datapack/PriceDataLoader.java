@@ -35,7 +35,7 @@ public class PriceDataLoader<T extends PriceData> extends SimplePreparableReload
             loader.forEach((resourceLocation, t) -> {
                 SeasonShop.logger().debug("loading item price data: {}", resourceLocation);
                 t.prices().forEach((itemId, itemPrice) -> SeasonShop.logger().debug("loading item price data:{} base {}\n spring {}\n summer {}\n autumn {}\n winter {}",
-                        itemId, itemPrice.basePrice().get(), itemPrice.springPrice().get(), itemPrice.summerPrice().get(), itemPrice.autumnPrice().get(), itemPrice.winterPrice().get()));
+                        itemId, itemPrice.basePrice().orElse(-1d), itemPrice.springPrice().orElse(-1d), itemPrice.summerPrice().orElse(-1d), itemPrice.autumnPrice().orElse(-1d), itemPrice.winterPrice().orElse(-1d)));
             });
         }
         return loader;
@@ -57,9 +57,7 @@ public class PriceDataLoader<T extends PriceData> extends SimplePreparableReload
             try (Reader reader = resource.getValue().openAsReader()) {
                 JsonElement element = JsonParser.parseReader(reader);
                 PriceData.CODEC.parse(JsonOps.INSTANCE, element)
-                        .resultOrPartial(error -> {
-                            SeasonShop.logger().debug("Failed to parse price data {}", error);
-                        })
+                        .resultOrPartial(error -> SeasonShop.logger().debug("Failed to parse price data {}", error))
                         .ifPresent(itemValues -> loader.put(resource.getKey(), (T) itemValues));
             } catch (Exception e) {
                 LOGGER.error("Failed to load custom data pack: {}", resource.getKey(), e);
@@ -69,7 +67,6 @@ public class PriceDataLoader<T extends PriceData> extends SimplePreparableReload
     }
 
     public Map<ResourceLocation, T> getLoader() {
-
         return loader;
     }
 }

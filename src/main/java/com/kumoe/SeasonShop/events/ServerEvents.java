@@ -3,10 +3,13 @@ package com.kumoe.SeasonShop.events;
 import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
 import com.kumoe.SeasonShop.content.command.SeasonShopCommand;
+import com.kumoe.SeasonShop.content.menu.BuybackMenu;
 import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
+import com.kumoe.SeasonShop.content.menu.ShopMenu;
 import com.kumoe.SeasonShop.data.PlacedBlockOwnerData;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.init.SeasonShop;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -16,6 +19,8 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import sereneseasons.api.season.Season;
+import sereneseasons.api.season.SeasonHelper;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -28,6 +33,7 @@ public class ServerEvents {
     @SubscribeEvent
     public static void addReloadListener(AddReloadListenerEvent event) {
         event.addListener(SeasonShop.getPriceLoader());
+        event.addListener(SeasonShop.getSettingLoader());
     }
 
     @SubscribeEvent
@@ -75,9 +81,10 @@ public class ServerEvents {
     public static void onItemTooltip(ItemTooltipEvent event) {
         Player player = event.getEntity();
         if (player != null) {
-            if (player.level().isClientSide() && player.containerMenu instanceof ShippingBinMenu) {
-                event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_1, ModUtils.getOneItemPrice(event.getItemStack())));
-                event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_2, BigDecimal.valueOf(ModUtils.getOneItemPrice(event.getItemStack()) * event.getItemStack().getCount()).setScale(2, RoundingMode.HALF_UP).doubleValue()));
+            Season season = SeasonHelper.getSeasonState(player.level()).getSeason();
+            if (player.level() instanceof ClientLevel && (player.containerMenu instanceof ShippingBinMenu || player.containerMenu instanceof ShopMenu || player.containerMenu instanceof BuybackMenu)) {
+                event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_1, ModUtils.getOneItemPrice(season, event.getItemStack())));
+                event.getToolTip().add(ModUtils.getLangComponent(SHIPPING_BIN_TOOLTIP_2, BigDecimal.valueOf(ModUtils.getOneItemPrice(season, event.getItemStack()) * event.getItemStack().getCount()).setScale(2, RoundingMode.HALF_UP).doubleValue()));
             }
         }
     }

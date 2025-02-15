@@ -6,11 +6,15 @@ import com.kumoe.SeasonShop.data.config.Config;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.data.datapack.PriceData;
 import com.kumoe.SeasonShop.data.datapack.PriceDataLoader;
+import com.kumoe.SeasonShop.data.datapack.ShopSetting;
+import com.kumoe.SeasonShop.data.datapack.ShopSettingLoader;
 import com.kumoe.SeasonShop.network.NetworkHandler;
 import com.kumoe.SeasonShop.network.S2CPriceSyncPacket;
+import com.kumoe.SeasonShop.network.S2CShopSettingSyncPacket;
 import com.mojang.logging.LogUtils;
 import com.tterrag.registrate.Registrate;
 import com.tterrag.registrate.providers.ProviderType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
@@ -18,18 +22,18 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
-// The value here should match an entry in the META-INF/mods.toml file
+
 @Mod(SeasonShop.MODID)
 @Mod.EventBusSubscriber(modid = SeasonShop.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@SuppressWarnings("deprecated")
 public final class SeasonShop {
     // Define mod id in a common place for everything to reference
     public static final String MODID = "season_shop";
@@ -37,13 +41,14 @@ public final class SeasonShop {
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final PriceDataLoader<PriceData> priceLoader = new PriceDataLoader<>();
+    private static final ShopSettingLoader<ResourceLocation, ShopSetting> settingLoader = new ShopSettingLoader<>();
     private static SeasonShop instance;
     final Pair<Config, ForgeConfigSpec> configured = (new ForgeConfigSpec.Builder()).configure(Config::new);
 
-    public SeasonShop() {
+    public SeasonShop(FMLJavaModLoadingContext context) {
         instance = this;
         SeasonShopBlocks.register();
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, configured.getRight());
+        context.registerConfig(ModConfig.Type.SERVER, configured.getRight());
         REGISTRATE.addDataGenerator(ProviderType.LANG, SSLangData::genLang);
         MinecraftForge.EVENT_BUS.addListener(this::onDatapackSync);
         MinecraftForge.EVENT_BUS.register(this);
@@ -61,6 +66,10 @@ public final class SeasonShop {
         return priceLoader;
     }
 
+    public static ShopSettingLoader<ResourceLocation, ShopSetting> getSettingLoader() {
+        return settingLoader;
+    }
+
     @SubscribeEvent
     public static void onModConfigLoad(ModConfigEvent event) {
         ModConfig config = event.getConfig();
@@ -75,10 +84,18 @@ public final class SeasonShop {
         NetworkHandler.register();
     }
 
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void registerGuiOverlayEvent(final RegisterGuiOverlaysEvent evt) {
+        evt.registerAboveAll("kanban_girl", new KanBanGirlOverlay());
+    }
+
     public void onDatapackSync(OnDatapackSyncEvent event) {
-        var packet = new S2CPriceSyncPacket(SeasonShop.getPriceLoader().getLoader());
+        var s2CPriceSyncPacket = new S2CPriceSyncPacket(SeasonShop.getPriceLoader().getLoader());
+        var s2CShopSettingSyncPacket = new S2CShopSettingSyncPacket(SeasonShop.getSettingLoader().getLoader());
         if (event.getPlayer() != null) {
-            NetworkHandler.sendToPlayer(PacketDistributor.PLAYER.with(event::getPlayer), packet);
+            NetworkHandler.sendToPlayer(event::getPlayer, s2CPriceSyncPacket);
+            NetworkHandler.sendToPlayer(event::getPlayer, s2CShopSettingSyncPacket);
         }
     }
 
@@ -88,11 +105,5 @@ public final class SeasonShop {
 
     public ForgeConfigSpec getConfigSpec() {
         return configured.getRight();
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void registerGuiOverlayEvent(final RegisterGuiOverlaysEvent evt) {
-        evt.registerAboveAll("kanban_girl", new KanBanGirlOverlay());
     }
 }

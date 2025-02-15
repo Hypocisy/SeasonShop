@@ -14,13 +14,14 @@ public class SeasonShopCommand {
                 .then(Commands.literal("clearAvatarCache")
                         .requires(ctx -> ctx.hasPermission(2))
                         .executes(context -> {
-                            if (context.getSource().isPlayer()) {
-                                NetworkHandler.getInstance().send(PacketDistributor.PLAYER.with(() -> context.getSource().getPlayer()), new S2CClearAvatarPacket());
+                            var commandSource = context.getSource();
+                            if (commandSource.isPlayer()) {
+                                NetworkHandler.getInstance().send(PacketDistributor.PLAYER.with(commandSource::getPlayer), new S2CClearAvatarPacket());
                                 return 1;
                             } else {
-                                context.getSource().sendSystemMessage(Component.literal("This command can only execute with player!"));
-                                return 0;
+                                commandSource.sendSystemMessage(Component.literal("This command can only execute with player!"));
                             }
+                            return 0;
                         }))
         );
     }

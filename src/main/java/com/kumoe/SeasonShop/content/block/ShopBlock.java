@@ -33,7 +33,6 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.network.NetworkHooks;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -68,11 +67,11 @@ public class ShopBlock extends ChestBlock {
         }
     };
 
-
     public ShopBlock(Properties pProperties) {
         super(pProperties, SeasonShopBlocks.SHOP_BE::get);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(TYPE, ChestType.SINGLE).setValue(WATERLOGGED, false));
     }
+
 
     public static void buildModel(DataGenContext<Block, ShopBlock> ctx, RegistrateBlockstateProvider pvd) {
         var single = pvd.models().getBuilder("block/shop_block")
@@ -123,9 +122,12 @@ public class ShopBlock extends ChestBlock {
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (!pLevel.isClientSide()) {
+        if (!pLevel.isClientSide() && pPlayer instanceof ServerPlayer serverPlayer) {
             if (pLevel.getBlockEntity(pPos) instanceof ShopBlockEntity blockEntity) {
-                NetworkHooks.openScreen((ServerPlayer) pPlayer, blockEntity, pPos);
+                NetworkHooks.openScreen(serverPlayer, this.getMenuProvider(pState, pLevel, pPos), byteBuf -> {
+                    byteBuf.writeBlockPos(pPos);
+                    byteBuf.writeInt(blockEntity.getCurrentPage());
+                });
                 pPlayer.awardStat(this.getOpenChestStat());
                 PiglinAi.angerNearbyPiglins(pPlayer, true);
             }
@@ -146,7 +148,7 @@ public class ShopBlock extends ChestBlock {
 
     }
 
-    public DoubleBlockCombiner.@NotNull NeighborCombineResult<ShopBlockEntity> combine(BlockState pState, Level pLevel, BlockPos pPos, boolean pOverride) {
+    public DoubleBlockCombiner.NeighborCombineResult<ShopBlockEntity> combine(BlockState pState, Level pLevel, BlockPos pPos, boolean pOverride) {
         BiPredicate<LevelAccessor, BlockPos> bipredicate = pOverride ? ((levelAccessor, blockPos) -> false) : ShopBlock::isChestBlockedAt;
         return DoubleBlockCombiner.combineWithNeigbour(SeasonShopBlocks.SHOP_BE.get(), ShopBlock::getBlockType, ShopBlock::getConnectedDirection, FACING, pState, pLevel, pPos, bipredicate);
     }
@@ -160,5 +162,12 @@ public class ShopBlock extends ChestBlock {
     @Override
     public ShopBlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return SeasonShopBlocks.SHOP_BE.get().create(pPos, pState);
+    }
+
+    @Override
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
+        if (pState.hasBlockEntity() && (!pState.is(pNewState.getBlock()) || !pNewState.hasBlockEntity())) {
+            pLevel.removeBlockEntity(pPos);
+        }
     }
 }

@@ -1,6 +1,7 @@
 {
   "values": [
     "season_shop:shipping_bin",
-    "season_shop:shop_block"
+    "season_shop:shop_block",
+    "season_shop:buyback_block"
   ]
 }

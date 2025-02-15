@@ -1,13 +1,18 @@
 package com.kumoe.SeasonShop.init;
 
+import com.kumoe.SeasonShop.content.block.BuyBackBlock;
 import com.kumoe.SeasonShop.content.block.ShippingBinBlock;
 import com.kumoe.SeasonShop.content.block.ShopBlock;
+import com.kumoe.SeasonShop.content.block.entity.BuyBackBlockEntity;
 import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
 import com.kumoe.SeasonShop.content.block.entity.ShopBlockEntity;
+import com.kumoe.SeasonShop.content.block.renderer.BuybackBlockRenderer;
 import com.kumoe.SeasonShop.content.block.renderer.ShippingBinRenderer;
 import com.kumoe.SeasonShop.content.block.renderer.ShopBlockRenderer;
+import com.kumoe.SeasonShop.content.menu.BuybackMenu;
 import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
 import com.kumoe.SeasonShop.content.menu.ShopMenu;
+import com.kumoe.SeasonShop.content.screen.BuyBackScreen;
 import com.kumoe.SeasonShop.content.screen.ShippingBinScreen;
 import com.kumoe.SeasonShop.content.screen.ShopScreen;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
@@ -21,11 +26,14 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class SeasonShopBlocks {
     public static BlockEntityEntry<ShopBlockEntity> SHOP_BE;
+    public static BlockEntityEntry<BuyBackBlockEntity> BUYBACK_BE;
     public static MenuEntry<ShippingBinMenu> SHIPPING_BIN_BLOCK_MENU;
     public static MenuEntry<ShopMenu> SHOP_BLOCK_MENU;
+    public static MenuEntry<BuybackMenu> BUYBACK_MENU;
 
     public static BlockEntry<ShippingBinBlock> SHIPPING_BIN_BLOCK;
     public static BlockEntry<ShopBlock> SHOP_BLOCK;
+    public static BlockEntry<BuyBackBlock> BUYBACK_BLOCK;
     public static BlockEntityEntry<ShippingBinBlockEntity> SHIPPING_BIN_BE;
     public static RegistryEntry<CreativeModeTab> SEASON_SHOP_TAB;
 
@@ -46,11 +54,13 @@ public class SeasonShopBlocks {
     private static void registerBlockEntity() {
         SHIPPING_BIN_BE = SeasonShop.REGISTRATE.blockEntity("shipping_bin_be", ShippingBinBlockEntity::new).validBlock(SHIPPING_BIN_BLOCK).renderer(() -> ShippingBinRenderer::new).register();
         SHOP_BE = SeasonShop.REGISTRATE.blockEntity("shop_be", ShopBlockEntity::new).validBlock(SHOP_BLOCK).renderer(() -> ShopBlockRenderer::new).register();
+        BUYBACK_BE = SeasonShop.REGISTRATE.blockEntity("buyback_be", BuyBackBlockEntity::new).validBlock(BUYBACK_BLOCK).renderer(() -> BuybackBlockRenderer::new).register();
     }
 
     private static void registerMenu() {
         SHIPPING_BIN_BLOCK_MENU = SeasonShop.REGISTRATE.menu("shipping_bin_block_menu", ShippingBinMenu::factory, () -> ShippingBinScreen::new).register();
         SHOP_BLOCK_MENU = SeasonShop.REGISTRATE.menu("shop_block_menu", ShopMenu::new, () -> ShopScreen::new).register();
+        BUYBACK_MENU = SeasonShop.REGISTRATE.menu("buyback_block_menu", BuybackMenu::new, () -> BuyBackScreen::new).register();
     }
 
     private static void registerBlock() {
@@ -58,6 +68,8 @@ public class SeasonShopBlocks {
                 .properties((properties) -> BlockBehaviour.Properties.copy(Blocks.CHEST)).blockstate(ShippingBinBlock::buildModel).tag(BlockTags.MINEABLE_WITH_AXE).item().tab(SEASON_SHOP_TAB.getKey(), (ctx, modifier) -> modifier.accept(ctx)).build().register();
         SHOP_BLOCK = SeasonShop.REGISTRATE.block("shop_block", ShopBlock::new)
                 .properties((properties) -> BlockBehaviour.Properties.copy(Blocks.CHEST)).blockstate(ShopBlock::buildModel).tag(BlockTags.MINEABLE_WITH_AXE).item().tab(SEASON_SHOP_TAB.getKey(), (ctx, modifier) -> modifier.accept(ctx)).build().register();
+        BUYBACK_BLOCK = SeasonShop.REGISTRATE.block("buyback_block", BuyBackBlock::new)
+                .properties((properties) -> BlockBehaviour.Properties.copy(Blocks.CHEST)).blockstate(BuyBackBlock::buildModel).tag(BlockTags.MINEABLE_WITH_AXE).item().tab(SEASON_SHOP_TAB.getKey(), (ctx, modifier) -> modifier.accept(ctx)).build().register();
     }
 
 }

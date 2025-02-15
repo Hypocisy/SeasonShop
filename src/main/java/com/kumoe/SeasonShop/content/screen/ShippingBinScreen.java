@@ -5,21 +5,19 @@ import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.content.block.entity.ShippingBinBlockEntity;
 import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
 import com.kumoe.SeasonShop.data.SSLangData;
-import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.init.SeasonShop;
+import com.kumoe.SeasonShop.network.C2SBinPricesPacket;
 import com.kumoe.SeasonShop.network.NetworkHandler;
-import com.kumoe.SeasonShop.network.PricesPacket;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -27,11 +25,11 @@ import java.io.File;
 
 @OnlyIn(Dist.CLIENT)
 public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> {
-    final ResourceLocation SHIPPING_BIN_GUI = new ResourceLocation(SeasonShop.MODID, "textures/gui/shipping_bin.png");
+    static final ResourceLocation SHIPPING_BIN_GUI = new ResourceLocation(SeasonShop.MODID, "textures/gui/shipping_bin.png");
+    protected final ShippingBinMenu menu;
+    protected final Container container;
+    protected final Player player;
     final Inventory playerInventory;
-    protected ShippingBinMenu menu;
-    protected Container container;
-    protected Player player;
 
     public ShippingBinScreen(ShippingBinMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -46,33 +44,19 @@ public class ShippingBinScreen extends AbstractContainerScreen<ShippingBinMenu> 
     @Override
     protected void init() {
         super.init();
-        ImageButton button = new ImageButton((this.width - this.imageWidth - 10) / 2 + 143, (this.height - this.imageHeight - 2) / 2 + 50, 16, 16, this.imageWidth, 0, 16, SHIPPING_BIN_GUI,
-                (pOnPress) -> {
-                    double totalPrice = 0d;
-                    if (container instanceof ShippingBinBlockEntity shippingBinBlockEntity) {
-                        for (ItemStack itemStack : shippingBinBlockEntity.getItems()) {
-                            if (!itemStack.isEmpty()) {
-                                totalPrice += ModUtils.getOneItemPrice(itemStack) * itemStack.getCount();
-                                ModUtils.recordTransaction(itemStack, itemStack.getCount());
-                            }
-                        }
-                        if (totalPrice != 0d) {
-                            // send sell request
-                            NetworkHandler.sendToServer(PricesPacket.create(shippingBinBlockEntity.getOwner(), totalPrice, shippingBinBlockEntity.getBlockPos()));
-                            KanBanGirlOverlay.setMessage(ModUtils.getLangComponent(SSLangData.SHIPPING_BIN_TOOLTIP_2, totalPrice).withStyle(Style.EMPTY.withBold(true)));
-                            if (SeasonShopConfig.enableDebug) {
-                                SeasonShop.logger().debug("total price: {}", totalPrice);
-                            }
-                        } else {
-                            KanBanGirlOverlay.setMessage(ModUtils.getLangComponent(SSLangData.SHIPPING_BIN_TOOLTIP_3));
-                        }
-                        this.player.closeContainer();
-                        KanBanGirlOverlay.switchRendering();
-                    }
-
-                });
+        ImageButton button = new ImageButton((this.width - this.imageWidth - 10) / 2 + 143, (this.height - this.imageHeight - 2) / 2 + 50, 16, 16, this.imageWidth, 0, 16, SHIPPING_BIN_GUI, this::onPress);
         button.setTooltip(Tooltip.create(ModUtils.getLangComponent(SSLangData.SHIPPING_BIN_TOOLTIP_4)));
         this.addRenderableWidget(button);
+    }
+
+    private void onPress(Button button) {
+        if (container instanceof ShippingBinBlockEntity shippingBinBlockEntity) {
+            // send sell request
+            var packet = C2SBinPricesPacket.create(shippingBinBlockEntity.getOwner(), shippingBinBlockEntity.getBlockPos());
+            NetworkHandler.sendToServer(packet);
+        } else {
+            KanBanGirlOverlay.setMessage(ModUtils.getLangComponent(SSLangData.SHIPPING_BIN_TOOLTIP_3));
+        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.kumoe.SeasonShop.content.screen;
 
-import com.kumoe.SeasonShop.data.SSLangData;
 import com.kumoe.SeasonShop.init.SeasonShop;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -19,6 +18,10 @@ public class KanBanGirlOverlay implements IGuiOverlay {
         isRendering = !isRendering;
     }
 
+    public static void setMessage(Component msg) {
+        message = msg;
+    }
+
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int width,
                        int height) {
@@ -30,9 +33,5 @@ public class KanBanGirlOverlay implements IGuiOverlay {
                 switchRendering();
             }
         }
-    }
-
-    public static void setMessage(Component msg) {
-        message = msg;
     }
 }

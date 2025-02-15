@@ -1,10 +1,9 @@
 package com.kumoe.SeasonShop.content.block.entity;
 
-import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.content.menu.ShippingBinMenu;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
 import com.kumoe.SeasonShop.network.NetworkHandler;
-import com.kumoe.SeasonShop.network.PricesPacket;
+import com.kumoe.SeasonShop.network.C2SBinPricesPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -72,18 +71,20 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
         pLevel.playSound(null, d0, d1, d2, pSound, SoundSource.BLOCKS, 0.5F, pLevel.random.nextFloat() * 0.1F + 0.9F);
     }
 
-    public static void lidAnimateTick(Level pLevel, BlockPos pPos, BlockState pState, ShippingBinBlockEntity pBlockEntity) {
-        pBlockEntity.getChestLidController().tickLid();
+    public static void tickClient(Level pLevel, BlockPos pPos, BlockState pState, ShippingBinBlockEntity pBlockEntity) {
+        lidAnimateTick(pLevel, pPos, pState, pBlockEntity);
         if (pLevel.getServer() != null && pLevel.getServer().getTickCount() % 18000 == 0) {
             // todo: render how much player sold
-            var totalPrice = 0d;
-            for (ItemStack itemStack : pBlockEntity.items) {
-                totalPrice += ModUtils.getOneItemPrice(itemStack) * itemStack.getCount();
-            }
-            // remove sold items
-            pBlockEntity.items.clear();
-            NetworkHandler.sendToServer(PricesPacket.create(pBlockEntity.getOwner(), totalPrice, pPos));
+            NetworkHandler.sendToServer(C2SBinPricesPacket.create(pBlockEntity.getOwner(), pPos));
         }
+    }
+
+    public static void tickServer(Level level, BlockPos blockPos, BlockState blockState, ShippingBinBlockEntity shippingBinBlockEntity) {
+//        SeasonShop.logger().debug("Shipping bin block server ticking {}",blockPos);
+    }
+
+    static void lidAnimateTick(Level pLevel, BlockPos pPos, BlockState pState, ShippingBinBlockEntity pBlockEntity) {
+        pBlockEntity.getChestLidController().tickLid();
     }
 
     @Override
@@ -174,6 +175,7 @@ public class ShippingBinBlockEntity extends ChestBlockEntity {
         return this.price;
     }
 
+    @Deprecated
     public void setPrice(double price) {
         this.price = price;
     }

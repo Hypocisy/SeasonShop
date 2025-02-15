@@ -1,7 +1,7 @@
 package com.kumoe.SeasonShop.content.menu;
 
 import com.kumoe.SeasonShop.api.ModUtils;
-import com.kumoe.SeasonShop.content.block.entity.ShopBlockEntity;
+import com.kumoe.SeasonShop.content.block.entity.BuyBackBlockEntity;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,16 +15,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class ShopMenu extends AbstractContainerMenu {
+public class BuybackMenu extends AbstractContainerMenu {
     protected final int containerRows = 3;
     protected final Inventory playerInventory;
-    private final ShopBlockEntity container;
+    private final BuyBackBlockEntity container;
 
-    public ShopMenu(MenuType<ShopMenu> pType, int pContainerId, Inventory pPlayerInventory, ShopBlockEntity pContainer) {
+    public BuybackMenu(MenuType<BuybackMenu> pType, int pContainerId, Inventory pPlayerInventory, BuyBackBlockEntity pContainer) {
         super(pType, pContainerId);
         this.container = pContainer;
         this.playerInventory = pPlayerInventory;
         this.container.startOpen(pPlayerInventory.player);
+        int e = (this.containerRows - 4) * 18;
         int row;
         int slot;
         for (row = 0; row < this.containerRows; ++row) {
@@ -36,17 +37,29 @@ public class ShopMenu extends AbstractContainerMenu {
         NonNullList<ItemStack> byPage = ModUtils.getItemsByPage(container.getCurrentPage());
         this.container.setItems(byPage);
         this.container.setChanged();
+        // add player inv
+        for (row = 0; row < 3; ++row) {
+            for (slot = 0; slot < 9; ++slot) {
+                this.addSlot(new Slot(pPlayerInventory, slot + row * 9 + 9, 8 + slot * 18, -10+123 + row * 18 + e));
+            }
+        }
+
+        for (row = 0; row < 9; ++row) {
+            this.addSlot(new Slot(pPlayerInventory, row, 8 + row * 18, -10+179 + e));
+        }
+
     }
 
-    public ShopMenu(MenuType<ShopMenu> menu, int windowId, Inventory playerInventory, @Nullable FriendlyByteBuf data) {
+    public BuybackMenu(MenuType<BuybackMenu> menu, int windowId, Inventory playerInventory, @Nullable FriendlyByteBuf data) {
         this(menu, windowId, playerInventory, getTileEntity(playerInventory, data));
     }
 
-    protected static ShopBlockEntity getTileEntity(Inventory playerInventory, @Nullable FriendlyByteBuf data) {
+
+    protected static BuyBackBlockEntity getTileEntity(Inventory playerInventory, @Nullable FriendlyByteBuf data) {
         Objects.requireNonNull(playerInventory, "playerInventory cannot be null");
         Objects.requireNonNull(data, "data cannot be null");
         BlockEntity tileAtPos = playerInventory.player.level().getBlockEntity(data.readBlockPos());
-        if (tileAtPos instanceof ShopBlockEntity bin) {
+        if (tileAtPos instanceof BuyBackBlockEntity bin) {
             bin.setCurrentPage(data.readInt());
             return bin;
         } else {
@@ -57,7 +70,7 @@ public class ShopMenu extends AbstractContainerMenu {
     /**
      * @param player 玩家
      * @param pIndex 快速移动到的slot的id
-     * @return {@link net.minecraft.world.item.ItemStack}如果拒绝移动，否则返回快速移动的物品
+     * @return {@link ItemStack}如果拒绝移动，否则返回快速移动的物品
      */
     @Override
     public ItemStack quickMoveStack(Player player, int pIndex) {
@@ -99,7 +112,7 @@ public class ShopMenu extends AbstractContainerMenu {
         this.container.stopOpen(pPlayer);
     }
 
-    public ShopBlockEntity getContainer() {
+    public BuyBackBlockEntity getContainer() {
         return container;
     }
 }

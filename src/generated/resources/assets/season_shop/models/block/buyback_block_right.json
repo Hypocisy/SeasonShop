@@ -1,0 +1,7 @@
+{
+  "parent": "season_shop:custom/buyback_block_right",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "right": "season_shop:block/buyback_block_right"
+  }
+}

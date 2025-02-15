@@ -1,5 +1,6 @@
 package com.kumoe.SeasonShop.content.block.entity;
 
+import com.kumoe.SeasonShop.content.menu.BuybackMenu;
 import com.kumoe.SeasonShop.content.menu.ShopMenu;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
 import com.kumoe.SeasonShop.network.NetworkHandler;
@@ -20,7 +21,7 @@ import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public class ShopBlockEntity extends ChestBlockEntity {
+public class BuyBackBlockEntity extends ChestBlockEntity {
     private final ChestLidController chestLidController;
     private final ContainerOpenersCounter openersCounter = new ContainerOpenersCounter() {
         protected void onOpen(Level level, BlockPos blockPos, BlockState state) {
@@ -43,19 +44,19 @@ public class ShopBlockEntity extends ChestBlockEntity {
     private Integer currentPage = 0;
     private NonNullList<ItemStack> items = NonNullList.withSize(27, ItemStack.EMPTY);
 
-    public ShopBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
+    public BuyBackBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
         this.chestLidController = new ChestLidController();
     }
 
-    public static void lidAnimateTick(Level pLevel, BlockPos pPos, BlockState pState, ShopBlockEntity pBlockEntity) {
+    public static void lidAnimateTick(Level pLevel, BlockPos pPos, BlockState pState, BuyBackBlockEntity pBlockEntity) {
         pBlockEntity.getChestLidController().tickLid();
     }
 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return this.canOpen(pPlayer) ? new ShopMenu(SeasonShopBlocks.SHOP_BLOCK_MENU.get(), pContainerId, pPlayerInventory, this) : null;
+        return this.canOpen(pPlayer) ? new BuybackMenu(SeasonShopBlocks.BUYBACK_MENU.get(), pContainerId, pPlayerInventory, this) : null;
     }
 
     @Override

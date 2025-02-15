@@ -4,21 +4,24 @@ import com.kumoe.SeasonShop.data.SSLangData;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
 import com.kumoe.SeasonShop.data.datapack.Price;
 import com.kumoe.SeasonShop.data.datapack.PriceData;
+import com.kumoe.SeasonShop.data.datapack.ShopSetting;
 import com.kumoe.SeasonShop.init.SeasonShop;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
-import sereneseasons.handler.season.SeasonHandler;
+import sereneseasons.api.season.Season;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -29,11 +32,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ModUtils {
 
@@ -43,6 +42,7 @@ public class ModUtils {
     private static final double PRICE_CHANGE_FACTOR = SeasonShopConfig.priceChangeFactor;  // 每个物品对价格的影响因子
     private static final Map<ResourceLocation, List<Transaction>> recentTransactions = new HashMap<>();
     protected static Map<ResourceLocation, PriceData> priceDataMap = SeasonShop.getPriceLoader().getLoader();
+    protected static Map<ResourceLocation, ShopSetting> settingMap = SeasonShop.getSettingLoader().getLoader();
     // size - overlay - default
     protected static String api = SeasonShopConfig.apiUrl;
     protected static String params = SeasonShopConfig.apiParams;
@@ -72,10 +72,10 @@ public class ModUtils {
         return Mth.absMax(SeasonShopConfig.minPriceLimit, Math.min(SeasonShopConfig.maxPriceLimit, multiplier));
     }
 
-    public static double getOneItemPrice(ItemStack stack) {
+    public static double getOneItemPrice(Season season, ItemStack stack) {
         // 如果设置价格则使用基础价格与季节价格相乘，如果没有返回默认价格。
         Price price = getItemPriceObject(stack);
-        double basePrice = (price != null) ? getCurrentSeasonPrice(price) : SeasonShopConfig.defaultPrice;
+        double basePrice = (price != null) ? getCurrentSeasonPrice(season, price) : SeasonShopConfig.defaultPrice;
         ResourceLocation itemId = stackToResourceLocation(stack);
         double demandMultiplier = itemId == null ? 1.0 : calculateDemandMultiplier(itemId);
 
@@ -100,8 +100,8 @@ public class ModUtils {
     /**
      * @return Get Season Icon V Offset
      */
-    public static int getSeasonIconVOffset() {
-        return switch (SeasonHandler.getClientSeasonTime().getSeason()) {
+    public static int getSeasonIconVOffset(Season season) {
+        return switch (season) {
             case SUMMER -> 13;
             case AUTUMN -> 26;
             case WINTER -> 39;
@@ -112,8 +112,8 @@ public class ModUtils {
     /**
      * @return Get current season's item price
      */
-    public static double getCurrentSeasonPrice(Price itemPrice) {
-        return switch (SeasonHandler.getClientSeasonTime().getSeason()) {
+    public static double getCurrentSeasonPrice(Season season, Price itemPrice) {
+        return switch (season) {
             case SPRING -> itemPrice.springPrice().orElse(SeasonShopConfig.defaultPrice);
             case SUMMER -> itemPrice.summerPrice().orElse(SeasonShopConfig.defaultPrice);
             case AUTUMN -> itemPrice.autumnPrice().orElse(SeasonShopConfig.defaultPrice);
@@ -129,7 +129,8 @@ public class ModUtils {
     public static void cachePlayerAvatar(UUID uuid) {
         File avatarFile = getAvatarFile(uuid);
         if (!avatarFile.getParentFile().exists()) {
-            avatarFile.getParentFile().mkdirs();
+            var isDirMade = avatarFile.getParentFile().mkdirs();
+            SeasonShop.logger().debug("Creating avatar file: {}, result {}", avatarFile.getAbsolutePath(), isDirMade);
         }
         if (!avatarFile.exists()) {
             try {
@@ -138,7 +139,7 @@ public class ModUtils {
                 BufferedImage bufferedImage = ImageIO.read(inputStream);
                 ImageIO.write(bufferedImage, "png", avatarFile);
             } catch (IOException e) {
-                SeasonShop.logger().debug(e.toString());
+                SeasonShop.logger().error("Failed to create user icon face uuid:{}, crash report: {}", uuid, e.toString());
             }
         }
     }
@@ -192,6 +193,38 @@ public class ModUtils {
 
     public static MutableComponent getLangComponent(SSLangData langData, Object... pArgs) {
         return Component.translatable(langData.key(), pArgs).withStyle(langData.format());
+    }
+
+    public static Optional<Item> getItemByRL(ResourceLocation resourceLocation) {
+        return Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourceLocation));
+    }
+
+    public static NonNullList<ItemStack> getItemsByPage(Integer page) {
+        NonNullList<ItemStack> itemStacks = NonNullList.withSize(27, ItemStack.EMPTY);
+        settingMap.values().forEach(shopSetting -> {
+            Map<Integer, List<ResourceLocation>> setting = shopSetting.setting();
+            if (!setting.isEmpty()) {
+                List<ResourceLocation> locations = setting.get(page);
+                if (locations != null) {
+                    for (int i = 0; i < locations.size(); i++) {
+                        int finalI = i;
+                        getItemByRL(locations.get(i)).ifPresent(item -> {
+                            itemStacks.set(finalI, item.getDefaultInstance());
+                            SeasonShop.logger().debug("Added item: {}", item.getDefaultInstance().getDisplayName().getString());
+                        });
+                    }
+                } else {
+                    SeasonShop.logger().debug("No locations found for page: {}", page);
+                }
+            } else {
+                SeasonShop.logger().debug("Setting map is empty or null for shopSetting: {}", shopSetting);
+            }
+        });
+        return itemStacks;
+    }
+
+    public static Map<ResourceLocation, ShopSetting> getSettingMap() {
+        return settingMap;
     }
 
     private static class Transaction {

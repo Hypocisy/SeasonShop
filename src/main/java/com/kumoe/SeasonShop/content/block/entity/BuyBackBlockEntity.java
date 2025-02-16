@@ -4,7 +4,7 @@ import com.kumoe.SeasonShop.content.menu.BuybackMenu;
 import com.kumoe.SeasonShop.content.menu.ShopMenu;
 import com.kumoe.SeasonShop.init.SeasonShopBlocks;
 import com.kumoe.SeasonShop.network.NetworkHandler;
-import com.kumoe.SeasonShop.network.UpdatePageMessage;
+import com.kumoe.SeasonShop.network.UpdatePageSubSeasonMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -20,6 +20,8 @@ import net.minecraft.world.level.block.entity.ChestLidController;
 import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
+import sereneseasons.api.season.Season;
+import sereneseasons.api.season.SeasonHelper;
 
 public class BuyBackBlockEntity extends ChestBlockEntity {
     private final ChestLidController chestLidController;
@@ -132,6 +134,7 @@ public class BuyBackBlockEntity extends ChestBlockEntity {
 
     public void updateServerPage(int newPage) {
         setCurrentPage(newPage);
-        NetworkHandler.getInstance().sendToServer(new UpdatePageMessage(newPage));
+        Season.SubSeason subSeason = SeasonHelper.getSeasonState(level).getSubSeason();
+        NetworkHandler.getInstance().sendToServer(new UpdatePageSubSeasonMessage(newPage, subSeason));
     }
 }

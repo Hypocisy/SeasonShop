@@ -1,8 +1,6 @@
 package com.kumoe.SeasonShop.content.menu;
 
-import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.content.block.entity.ShopBlockEntity;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -32,10 +30,7 @@ public class ShopMenu extends AbstractContainerMenu {
                 this.addSlot(new CustomSlot(pContainer, slot + row * 9, 8 + slot * 18, -2 + row * 18));
             }
         }
-        this.container.clearContent();
-        NonNullList<ItemStack> byPage = ModUtils.getItemsByPage(container.getCurrentPage());
-        this.container.setItems(byPage);
-        this.container.setChanged();
+        this.container.updateServerPage(this.container.getCurrentPage());
     }
 
     public ShopMenu(MenuType<ShopMenu> menu, int windowId, Inventory playerInventory, @Nullable FriendlyByteBuf data) {

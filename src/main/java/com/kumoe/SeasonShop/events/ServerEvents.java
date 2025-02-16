@@ -33,6 +33,7 @@ public class ServerEvents {
     @SubscribeEvent
     public static void addReloadListener(AddReloadListenerEvent event) {
         event.addListener(SeasonShop.getPriceLoader());
+        event.addListener(SeasonShop.getBuyBackSettingLoader());
         event.addListener(SeasonShop.getSettingLoader());
     }
 

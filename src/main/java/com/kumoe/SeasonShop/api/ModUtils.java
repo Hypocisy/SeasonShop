@@ -2,6 +2,7 @@ package com.kumoe.SeasonShop.api;
 
 import com.kumoe.SeasonShop.data.SSLangData;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
+import com.kumoe.SeasonShop.data.datapack.BuyBackSetting;
 import com.kumoe.SeasonShop.data.datapack.Price;
 import com.kumoe.SeasonShop.data.datapack.PriceData;
 import com.kumoe.SeasonShop.data.datapack.ShopSetting;
@@ -43,6 +44,7 @@ public class ModUtils {
     private static final Map<ResourceLocation, List<Transaction>> recentTransactions = new HashMap<>();
     protected static Map<ResourceLocation, PriceData> priceDataMap = SeasonShop.getPriceLoader().getLoader();
     protected static Map<ResourceLocation, ShopSetting> settingMap = SeasonShop.getSettingLoader().getLoader();
+    protected static Map<ResourceLocation, BuyBackSetting> buybackMap = SeasonShop.getBuyBackSettingLoader().getLoader();
     // size - overlay - default
     protected static String api = SeasonShopConfig.apiUrl;
     protected static String params = SeasonShopConfig.apiParams;
@@ -218,6 +220,30 @@ public class ModUtils {
                 }
             } else {
                 SeasonShop.logger().debug("Setting map is empty or null for shopSetting: {}", shopSetting);
+            }
+        });
+        return itemStacks;
+    }
+
+    public static NonNullList<ItemStack> getItemsByPageAndSeason(Season.SubSeason subSeason, Integer page) {
+        NonNullList<ItemStack> itemStacks = NonNullList.withSize(27, ItemStack.EMPTY);
+        buybackMap.values().stream().filter(buyBackSetting -> buyBackSetting.subSeason() == subSeason).forEach(buyBackSetting -> {
+            Map<Integer, List<ResourceLocation>> setting = buyBackSetting.setting();
+            if (!setting.isEmpty()) {
+                List<ResourceLocation> locations = setting.get(page);
+                if (locations != null) {
+                    for (int i = 0; i < locations.size(); i++) {
+                        int finalI = i;
+                        getItemByRL(locations.get(i)).ifPresent(item -> {
+                            itemStacks.set(finalI, item.getDefaultInstance());
+                            SeasonShop.logger().debug("Added item: {}", item.getDefaultInstance().getDisplayName().getString());
+                        });
+                    }
+                } else {
+                    SeasonShop.logger().debug("No locations found for page: {}", page);
+                }
+            } else {
+                SeasonShop.logger().debug("Setting map is empty or null for shopSetting: {}", buyBackSetting);
             }
         });
         return itemStacks;

@@ -39,7 +39,13 @@ public class NetworkHandler {
                 .encoder(S2CShopSettingSyncPacket::encode)
                 .consumerNetworkThread(S2CShopSettingSyncPacket::handle).add();
 
+        net.messageBuilder(S2CBuyBackSettingSyncPacket.class, getId(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(S2CBuyBackSettingSyncPacket::decode)
+                .encoder(S2CBuyBackSettingSyncPacket::encode)
+                .consumerNetworkThread(S2CBuyBackSettingSyncPacket::handle).add();
+
         net.registerMessage(getId(), UpdatePageMessage.class, UpdatePageMessage::encode, UpdatePageMessage::decode, UpdatePageMessage::handle);
+        net.registerMessage(getId(), UpdatePageSubSeasonMessage.class, UpdatePageSubSeasonMessage::encode, UpdatePageSubSeasonMessage::decode, UpdatePageSubSeasonMessage::handle);
         net.messageBuilder(S2CClearAvatarPacket.class, getId(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(S2CClearAvatarPacket::decode)
                 .encoder(S2CClearAvatarPacket::encode)

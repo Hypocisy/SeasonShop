@@ -1,8 +1,6 @@
 package com.kumoe.SeasonShop.content.menu;
 
-import com.kumoe.SeasonShop.api.ModUtils;
 import com.kumoe.SeasonShop.content.block.entity.BuyBackBlockEntity;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -33,20 +31,19 @@ public class BuybackMenu extends AbstractContainerMenu {
                 this.addSlot(new CustomSlot(pContainer, slot + row * 9, 8 + slot * 18, -2 + row * 18));
             }
         }
-        this.container.clearContent();
-        NonNullList<ItemStack> byPage = ModUtils.getItemsByPage(container.getCurrentPage());
-        this.container.setItems(byPage);
-        this.container.setChanged();
+
         // add player inv
         for (row = 0; row < 3; ++row) {
             for (slot = 0; slot < 9; ++slot) {
-                this.addSlot(new Slot(pPlayerInventory, slot + row * 9 + 9, 8 + slot * 18, -10+123 + row * 18 + e));
+                this.addSlot(new Slot(pPlayerInventory, slot + row * 9 + 9, 8 + slot * 18, -10 + 123 + row * 18 + e));
             }
         }
 
         for (row = 0; row < 9; ++row) {
-            this.addSlot(new Slot(pPlayerInventory, row, 8 + row * 18, -10+179 + e));
+            this.addSlot(new Slot(pPlayerInventory, row, 8 + row * 18, -10 + 179 + e));
         }
+
+        this.container.updateServerPage(this.container.getCurrentPage());
 
     }
 

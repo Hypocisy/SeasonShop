@@ -4,11 +4,9 @@ import com.kumoe.SeasonShop.content.screen.KanBanGirlOverlay;
 import com.kumoe.SeasonShop.data.SSLangData;
 import com.kumoe.SeasonShop.data.config.Config;
 import com.kumoe.SeasonShop.data.config.SeasonShopConfig;
-import com.kumoe.SeasonShop.data.datapack.PriceData;
-import com.kumoe.SeasonShop.data.datapack.PriceDataLoader;
-import com.kumoe.SeasonShop.data.datapack.ShopSetting;
-import com.kumoe.SeasonShop.data.datapack.ShopSettingLoader;
+import com.kumoe.SeasonShop.data.datapack.*;
 import com.kumoe.SeasonShop.network.NetworkHandler;
+import com.kumoe.SeasonShop.network.S2CBuyBackSettingSyncPacket;
 import com.kumoe.SeasonShop.network.S2CPriceSyncPacket;
 import com.kumoe.SeasonShop.network.S2CShopSettingSyncPacket;
 import com.mojang.logging.LogUtils;
@@ -33,7 +31,6 @@ import org.slf4j.Logger;
 
 @Mod(SeasonShop.MODID)
 @Mod.EventBusSubscriber(modid = SeasonShop.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-@SuppressWarnings("deprecated")
 public final class SeasonShop {
     // Define mod id in a common place for everything to reference
     public static final String MODID = "season_shop";
@@ -42,6 +39,7 @@ public final class SeasonShop {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final PriceDataLoader<PriceData> priceLoader = new PriceDataLoader<>();
     private static final ShopSettingLoader<ResourceLocation, ShopSetting> settingLoader = new ShopSettingLoader<>();
+    private static final BuyBackSettingLoader<ResourceLocation, BuyBackSetting> buyBackSettingLoader = new BuyBackSettingLoader<>();
     private static SeasonShop instance;
     final Pair<Config, ForgeConfigSpec> configured = (new ForgeConfigSpec.Builder()).configure(Config::new);
 
@@ -70,6 +68,10 @@ public final class SeasonShop {
         return settingLoader;
     }
 
+    public static BuyBackSettingLoader<ResourceLocation, BuyBackSetting> getBuyBackSettingLoader() {
+        return buyBackSettingLoader;
+    }
+
     @SubscribeEvent
     public static void onModConfigLoad(ModConfigEvent event) {
         ModConfig config = event.getConfig();
@@ -93,9 +95,11 @@ public final class SeasonShop {
     public void onDatapackSync(OnDatapackSyncEvent event) {
         var s2CPriceSyncPacket = new S2CPriceSyncPacket(SeasonShop.getPriceLoader().getLoader());
         var s2CShopSettingSyncPacket = new S2CShopSettingSyncPacket(SeasonShop.getSettingLoader().getLoader());
+        var s2CBuyBackSettingSyncPacket = new S2CBuyBackSettingSyncPacket(SeasonShop.getBuyBackSettingLoader().getLoader());
         if (event.getPlayer() != null) {
             NetworkHandler.sendToPlayer(event::getPlayer, s2CPriceSyncPacket);
             NetworkHandler.sendToPlayer(event::getPlayer, s2CShopSettingSyncPacket);
+            NetworkHandler.sendToPlayer(event::getPlayer, s2CBuyBackSettingSyncPacket);
         }
     }
 
